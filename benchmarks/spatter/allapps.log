@@ -1,0 +1,747 @@
+Running ./build_serial/spatter with ./standard-suite/app-traces/amg.json
+Length is 23274352; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 240.005
+Average elements per row (cache miss) 3.9377
+Average hit rate 99.218
+Length is 23274352; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 469.347
+Average elements per row (cache miss) 7.75041
+Average hit rate 99.218
+Length is 23274352; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 938.653
+Average elements per row (cache miss) 14.9999
+Average hit rate 99.218
+Length is 23274352; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 1706.56
+Average elements per row (cache miss) 27.9977
+Average hit rate 99.218
+Length is 23274352; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 3412.53
+Average elements per row (cache miss) 47.9913
+Average hit rate 99.218
+Length is 23274352; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 160.001
+Average elements per row (cache miss) 3.93764
+Average hit rate 99.2173
+Length is 23274352; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 309.336
+Average elements per row (cache miss) 7.75016
+Average hit rate 99.2173
+Length is 23274352; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 618.646
+Average elements per row (cache miss) 14.9989
+Average hit rate 99.2173
+Length is 23274352; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 1109.22
+Average elements per row (cache miss) 27.994
+Average hit rate 99.2173
+Length is 23274352; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 2047.38
+Average elements per row (cache miss) 47.9807
+Average hit rate 99.2173
+
+Running Spatter version 1.1
+Compiler: GNU ver. 11.4.0
+Backend: Serial
+Aggregate Results? NO
+
+config         bytes          time(s)        bw(MB/s)       
+0              186194816      0.16606        1121.25        
+1              186194816      0.165748       1123.36        
+Running ./build_serial/spatter with ./standard-suite/app-traces/lulesh.json
+Length is 9244896; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 511.984
+Average elements per row (cache miss) -nan
+Average hit rate 99.9998
+Length is 9244896; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 1023.91
+Average elements per row (cache miss) -nan
+Average hit rate 99.9998
+Length is 9244896; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 2047.6
+Average elements per row (cache miss) -nan
+Average hit rate 99.9998
+Length is 9244896; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 4094.29
+Average elements per row (cache miss) -nan
+Average hit rate 99.9998
+Length is 9244896; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 8188.57
+Average elements per row (cache miss) -nan
+Average hit rate 99.9998
+Length is 3699168; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 480.106
+Average elements per row (cache miss) 3.93979
+Average hit rate 99.2183
+Length is 3699168; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 960.08
+Average elements per row (cache miss) 7.75394
+Average hit rate 99.2183
+Length is 3699168; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1919.63
+Average elements per row (cache miss) 15.0055
+Average hit rate 99.2183
+Length is 3699168; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 3582.27
+Average elements per row (cache miss) 28.0033
+Average hit rate 99.2183
+Length is 3699168; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 6145.06
+Average elements per row (cache miss) 48.042
+Average hit rate 99.2183
+Length is 2684880; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 480.162
+Average elements per row (cache miss) 3.94069
+Average hit rate 99.2182
+Length is 2684880; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 960.323
+Average elements per row (cache miss) 7.75706
+Average hit rate 99.2182
+Length is 2684880; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1920.65
+Average elements per row (cache miss) 15.0168
+Average hit rate 99.2182
+Length is 2684880; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 3583.93
+Average elements per row (cache miss) 28.0229
+Average hit rate 99.2182
+Length is 2684880; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 6150.1
+Average elements per row (cache miss) 48.0945
+Average hit rate 99.2182
+Length is 2048032; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 383.912
+Average elements per row (cache miss) 28.0047
+Average hit rate 93.7478
+Length is 2048032; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 767.632
+Average elements per row (cache miss) 47.9995
+Average hit rate 93.7478
+Length is 2048032; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1023.01
+Average elements per row (cache miss) 63.9605
+Average hit rate 93.7478
+Length is 2048032; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 1362.67
+Average elements per row (cache miss) 85.1969
+Average hit rate 93.7478
+Length is 2048032; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 1632
+Average elements per row (cache miss) 102.036
+Average hit rate 93.7478
+Length is 1541760; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 416
+Average elements per row (cache miss) 15.0123
+Average hit rate 96.8721
+Length is 1541760; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 768.085
+Average elements per row (cache miss) 28.0272
+Average hit rate 96.8721
+Length is 1541760; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1536.17
+Average elements per row (cache miss) 48.0651
+Average hit rate 96.8721
+Length is 1541760; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 2046.98
+Average elements per row (cache miss) 64.0279
+Average hit rate 96.8721
+Length is 1541760; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 2725.02
+Average elements per row (cache miss) 85.2363
+Average hit rate 96.8721
+Length is 1541760; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 383.936
+Average elements per row (cache miss) 28.007
+Average hit rate 93.7471
+Length is 1541760; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 767.873
+Average elements per row (cache miss) 48.0219
+Average hit rate 93.7471
+Length is 1541760; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1023.75
+Average elements per row (cache miss) 64.0139
+Average hit rate 93.7471
+Length is 1541760; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 1363.92
+Average elements per row (cache miss) 85.2847
+Average hit rate 93.7471
+Length is 1541760; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 1634.13
+Average elements per row (cache miss) 102.181
+Average hit rate 93.7471
+Length is 1538976; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 384.053
+Average elements per row (cache miss) 28.0156
+Average hit rate 93.7471
+Length is 1538976; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 768.106
+Average elements per row (cache miss) 48.0366
+Average hit rate 93.7471
+Length is 1538976; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1023.87
+Average elements per row (cache miss) 64.0219
+Average hit rate 93.7471
+Length is 1538976; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 1365.66
+Average elements per row (cache miss) 85.3936
+Average hit rate 93.7471
+Length is 1538976; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 1639.09
+Average elements per row (cache miss) 102.491
+Average hit rate 93.7471
+Length is 1408176; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 415.997
+Average elements per row (cache miss) 3.95311
+Average hit rate 99.2155
+Length is 1408176; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 831.692
+Average elements per row (cache miss) 7.77834
+Average hit rate 99.2155
+Length is 1408176; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1663.38
+Average elements per row (cache miss) 15.0567
+Average hit rate 99.2155
+Length is 1408176; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 3070.77
+Average elements per row (cache miss) 28.1134
+Average hit rate 99.2155
+Length is 1408176; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 6141.53
+Average elements per row (cache miss) 48.2442
+Average hit rate 99.2155
+Length is 1228704; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 448.067
+Average elements per row (cache miss) 28.0046
+Average hit rate 93.7499
+Length is 1228704; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 768.347
+Average elements per row (cache miss) 48.0225
+Average hit rate 93.7499
+Length is 1228704; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1025.55
+Average elements per row (cache miss) 64.0975
+Average hit rate 93.7499
+Length is 1228704; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 1367.45
+Average elements per row (cache miss) 85.4667
+Average hit rate 93.7499
+Length is 1228704; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 1640.97
+Average elements per row (cache miss) 102.562
+Average hit rate 93.7499
+Length is 1228704; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 234.647
+Average elements per row (cache miss) 42.1629
+Average hit rate 82.0313
+Length is 1228704; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 298.64
+Average elements per row (cache miss) 53.6617
+Average hit rate 82.0313
+Length is 1228704; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 341.307
+Average elements per row (cache miss) 61.3283
+Average hit rate 82.0313
+Length is 1228704; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 372.335
+Average elements per row (cache miss) 66.9036
+Average hit rate 82.0313
+Length is 1228704; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 390.065
+Average elements per row (cache miss) 70.0895
+Average hit rate 82.0313
+Length is 1228704; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 503.98
+Average elements per row (cache miss) 3.93833
+Average hit rate 99.2185
+Length is 1228704; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 991.96
+Average elements per row (cache miss) 7.75167
+Average hit rate 99.2185
+Length is 1228704; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1919.92
+Average elements per row (cache miss) 15.0033
+Average hit rate 99.2185
+Length is 1228704; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 3583.84
+Average elements per row (cache miss) 28.0067
+Average hit rate 99.2185
+Length is 1228704; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 6143.68
+Average elements per row (cache miss) 48.0133
+Average hit rate 99.2185
+Length is 1156320; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 416.68
+Average elements per row (cache miss) 3.95706
+Average hit rate 99.2148
+Length is 1156320; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 832.991
+Average elements per row (cache miss) 7.78673
+Average hit rate 99.2148
+Length is 1156320; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1665.98
+Average elements per row (cache miss) 15.0779
+Average hit rate 99.2148
+Length is 1156320; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 3072.79
+Average elements per row (cache miss) 28.1237
+Average hit rate 99.2148
+Length is 1156320; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 6123.94
+Average elements per row (cache miss) 48.162
+Average hit rate 99.2148
+
+Running Spatter version 1.1
+Compiler: GNU ver. 11.4.0
+Backend: Serial
+Aggregate Results? NO
+
+config         bytes          time(s)        bw(MB/s)       
+0              73959168       0.0652815      1132.93        
+1              29593344       0.0262635      1126.79        
+2              21479040       0.0184218      1165.96        
+3              16384256       0.0151189      1083.7         
+4              12334080       0.0108808      1133.56        
+5              12334080       0.011936       1033.35        
+6              12311808       0.0109801      1121.28        
+7              11265408       0.00944099     1193.24        
+8              9829632        0.00878159     1119.35        
+9              9829632        0.00897899     1094.74        
+10             9829632        0.0085191      1153.84        
+11             9250560        0.00820025     1128.08        
+Running ./build_serial/spatter with ./standard-suite/app-traces/nekbone.json
+Length is 15727680; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 471.992
+Average elements per row (cache miss) 11.4377
+Average hit rate 97.6562
+Length is 15727680; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 895.971
+Average elements per row (cache miss) 21.7501
+Average hit rate 97.6562
+Length is 15727680; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1664.01
+Average elements per row (cache miss) 39.0017
+Average hit rate 97.6562
+Length is 15727680; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 2560.28
+Average elements per row (cache miss) 60.0096
+Average hit rate 97.6562
+Length is 15727680; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 3413.79
+Average elements per row (cache miss) 80.0138
+Average hit rate 97.6562
+Length is 15727680; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 447.992
+Average elements per row (cache miss) 27.9998
+Average hit rate 93.7499
+Length is 15727680; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 767.971
+Average elements per row (cache miss) 47.9989
+Average hit rate 93.7499
+Length is 15727680; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1024.01
+Average elements per row (cache miss) 64.0012
+Average hit rate 93.7499
+Length is 15727680; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 1365.39
+Average elements per row (cache miss) 85.3376
+Average hit rate 93.7499
+Length is 15727680; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 1638.49
+Average elements per row (cache miss) 102.407
+Average hit rate 93.7499
+Length is 7863840; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 447.985
+Average elements per row (cache miss) 27.9998
+Average hit rate 93.7499
+Length is 7863840; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 768.004
+Average elements per row (cache miss) 48.0017
+Average hit rate 93.7499
+Length is 7863840; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1024.14
+Average elements per row (cache miss) 64.0103
+Average hit rate 93.7499
+Length is 7863840; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 1365.56
+Average elements per row (cache miss) 85.3497
+Average hit rate 93.7499
+Length is 7863840; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 1638.7
+Average elements per row (cache miss) 102.421
+Average hit rate 93.7499
+
+Running Spatter version 1.1
+Compiler: GNU ver. 11.4.0
+Backend: Serial
+Aggregate Results? NO
+
+config         bytes          time(s)        bw(MB/s)       
+0              125821440      0.112417       1119.24        
+1              125821440      0.112297       1120.43        
+2              62910720       0.0557802      1127.83        
+Running ./build_serial/spatter with ./standard-suite/app-traces/pennant.json
+Length is 1333333328; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 496
+Average elements per row (cache miss) 8
+Average hit rate 98.4375
+Length is 1333333328; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 960
+Average elements per row (cache miss) 15
+Average hit rate 98.4375
+Length is 1333333328; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1792
+Average elements per row (cache miss) 28
+Average hit rate 98.4375
+Length is 1333333328; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 3072
+Average elements per row (cache miss) 48
+Average hit rate 98.4375
+Length is 1333333328; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 4096
+Average elements per row (cache miss) 64
+Average hit rate 98.4375
+Length is 1333333328; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 496
+Average elements per row (cache miss) 8
+Average hit rate 98.4375
+Length is 1333333328; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 960
+Average elements per row (cache miss) 15
+Average hit rate 98.4375
+Length is 1333333328; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1792
+Average elements per row (cache miss) 28
+Average hit rate 98.4375
+Length is 1333333328; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 3072
+Average elements per row (cache miss) 48
+Average hit rate 98.4375
+Length is 1333333328; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 4096
+Average elements per row (cache miss) 64
+Average hit rate 98.4375
+Length is 7712; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 15.6364
+Average elements per row (cache miss) 3.90909
+Average hit rate 75
+Length is 7712; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 15.6081
+Average elements per row (cache miss) 3.90203
+Average hit rate 75
+Length is 7712; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 15.6064
+Average elements per row (cache miss) 3.90159
+Average hit rate 75
+Length is 7712; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 15.6099
+Average elements per row (cache miss) 3.90247
+Average hit rate 75
+Length is 7712; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 15.6113
+Average elements per row (cache miss) 3.90283
+Average hit rate 75
+Length is 1333333328; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 384
+Average elements per row (cache miss) 7.75002
+Average hit rate 98.4375
+Length is 1333333328; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 768
+Average elements per row (cache miss) 15
+Average hit rate 98.4375
+Length is 1333333328; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1536
+Average elements per row (cache miss) 28.0001
+Average hit rate 98.4375
+Length is 1333333328; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 3072
+Average elements per row (cache miss) 48.0002
+Average hit rate 98.4375
+Length is 1333333328; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 4096
+Average elements per row (cache miss) 64.0001
+Average hit rate 98.4375
+Length is 1333333328; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 384
+Average elements per row (cache miss) 7.75002
+Average hit rate 98.4375
+Length is 1333333328; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 768
+Average elements per row (cache miss) 15
+Average hit rate 98.4375
+Length is 1333333328; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1536
+Average elements per row (cache miss) 28.0001
+Average hit rate 98.4375
+Length is 1333333328; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 3072
+Average elements per row (cache miss) 48.0002
+Average hit rate 98.4375
+Length is 1333333328; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 4096
+Average elements per row (cache miss) 64.0001
+Average hit rate 98.4375
+Length is 8281568; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 31.8823
+Average elements per row (cache miss) 4.1
+Average hit rate 87.5
+Length is 8281568; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 32.903
+Average elements per row (cache miss) 4.16343
+Average hit rate 87.5
+Length is 8281568; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 33.4383
+Average elements per row (cache miss) 4.19672
+Average hit rate 87.5
+Length is 8281568; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 33.7125
+Average elements per row (cache miss) 4.21407
+Average hit rate 87.5
+Length is 8281568; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 33.8512
+Average elements per row (cache miss) 4.23141
+Average hit rate 87.5
+Length is 2000000000; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 496
+Average elements per row (cache miss) 4
+Average hit rate 99.2188
+Length is 2000000000; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 992
+Average elements per row (cache miss) 8
+Average hit rate 99.2188
+Length is 2000000000; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1920
+Average elements per row (cache miss) 15
+Average hit rate 99.2188
+Length is 2000000000; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 3584
+Average elements per row (cache miss) 28
+Average hit rate 99.2188
+Length is 2000000000; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 6144
+Average elements per row (cache miss) 48
+Average hit rate 99.2188
+Length is 10272; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 10272; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 10272; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 10272; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 10272; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 10272; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 10272; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 10272; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 10272; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 10272; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 800000000; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 480
+Average elements per row (cache miss) 15
+Average hit rate 96.875
+Length is 800000000; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 896
+Average elements per row (cache miss) 28
+Average hit rate 96.875
+Length is 800000000; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 1536
+Average elements per row (cache miss) 48.0001
+Average hit rate 96.875
+Length is 800000000; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 2048
+Average elements per row (cache miss) 64
+Average hit rate 96.875
+Length is 800000000; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 2730.66
+Average elements per row (cache miss) 85.3331
+Average hit rate 96.875
+Length is 2112; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 2112; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 2112; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 2112; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 2112; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 7712; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 15.6364
+Average elements per row (cache miss) 3.90909
+Average hit rate 75
+Length is 7712; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 15.6081
+Average elements per row (cache miss) 3.90203
+Average hit rate 75
+Length is 7712; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 15.6064
+Average elements per row (cache miss) 3.90159
+Average hit rate 75
+Length is 7712; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 15.6099
+Average elements per row (cache miss) 3.90247
+Average hit rate 75
+Length is 7712; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 15.6113
+Average elements per row (cache miss) 3.90283
+Average hit rate 75
+Length is 3856; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 15.7576
+Average elements per row (cache miss) 3.93939
+Average hit rate 75
+Length is 3856; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 15.7354
+Average elements per row (cache miss) 3.93385
+Average hit rate 75
+Length is 3856; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 15.7378
+Average elements per row (cache miss) 3.93445
+Average hit rate 75
+Length is 3856; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 15.7388
+Average elements per row (cache miss) 3.93469
+Average hit rate 75
+Length is 3856; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 15.7388
+Average elements per row (cache miss) 3.93469
+Average hit rate 75
+Length is 8316000; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 32
+Average elements per row (cache miss) 4.00001
+Average hit rate 87.5
+Length is 8316000; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 33.0321
+Average elements per row (cache miss) 4.12902
+Average hit rate 87.5
+Length is 8316000; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 33.5739
+Average elements per row (cache miss) 4.19674
+Average hit rate 87.5
+Length is 8316000; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 33.8513
+Average elements per row (cache miss) 4.23142
+Average hit rate 87.5
+Length is 8316000; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 33.9916
+Average elements per row (cache miss) 4.24896
+Average hit rate 87.5
+Length is 30848; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 30848; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 30848; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 30848; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 30848; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 800000000; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 512
+Average elements per row (cache miss) 16
+Average hit rate 96.875
+Length is 800000000; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 1024
+Average elements per row (cache miss) 32
+Average hit rate 96.875
+Length is 800000000; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 2048
+Average elements per row (cache miss) 64
+Average hit rate 96.875
+Length is 800000000; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 4095.99
+Average elements per row (cache miss) 128
+Average hit rate 96.875
+Length is 800000000; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 4095.98
+Average elements per row (cache miss) 127.999
+Average hit rate 96.875
+Length is 10272; tile size is 4096 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 10272; tile size is 8192 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 10272; tile size is 16384 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 10272; tile size is 32768 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+Length is 10272; tile size is 65536 bytes; element size 8 bytes
+Average elements per row 16
+Average elements per row (cache miss) 1
+Average hit rate 93.75
+
+Running Spatter version 1.1
+Compiler: GNU ver. 11.4.0
+Backend: Serial
+Aggregate Results? NO
+
+config         bytes          time(s)        bw(MB/s)       
+0              10666666624    9.55087        1116.83        
+1              10666666624    9.55893        1115.88        
+2              61696          5.5442e-05     1112.8         
+3              10666666624    9.57019        1114.57        
+4              10666666624    9.57965        1113.47        
+5              66252544       0.0991288      668.348        
+6              16000000000    14.4014        1111           
+7              82176          7.3525e-05     1117.66        
+8              82176          7.3786e-05     1113.71        
+9              6400000000     5.73414        1116.12        
+10             16896          1.5092e-05     1119.53        
+11             61696          5.7607e-05     1070.98        
+12             30848          2.7727e-05     1112.56        
+13             66528000       0.10259        648.482        
+14             246784         0.000223683    1103.28        
+15             6400000000     5.7517         1112.72        
+16             82176          7.3626e-05     1116.13        
+All JSON files processed successfully.

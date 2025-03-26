@@ -1,0 +1,80 @@
+SHELL=/bin/sh
+BENCHMARK=cg_cpp
+BENCHMARKU=CG_CPP
+GEM5_HOME=../../../../../..
+
+
+include ../config/make.def
+
+include ../sys/make.common
+
+# Define CG_CPP_FLAGS to hold additional compilation flags
+CG_CPP_FLAGS =
+
+# If TILE_SIZE is defined, add -DTILE_SIZE=<value> to CG_CPP_FLAGS
+ifdef TILE_SIZE
+	CG_CPP_FLAGS += -DTILE_SIZE=$(TILE_SIZE)
+endif
+
+# If DO_VERIFY is defined, add -DDO_VERIFY to CG_CPP_FLAGS
+ifdef DO_VERIFY
+	CG_CPP_FLAGS += -DDO_VERIFY
+endif
+
+# If GEM5 is defined, add -DGEM5; else add -DFUNC
+ifdef GEM5
+	CG_CPP_FLAGS += -DGEM5
+else
+	CG_CPP_FLAGS += -DFUNC
+endif
+
+ifdef USE_DATA_FROM_FILE
+	CG_CPP_FLAGS += -DUSE_DATA_FROM_FILE
+endif
+
+ifdef DUMP_TO_FILE
+	CG_CPP_FLAGS += -DDUMP_TO_FILE
+endif
+
+# Add any other specific flags as needed
+# For example, if you have additional flags like DUMP_KEY_ARRAY or USE_KEY_ARRAY_FILE, add them here
+# ifdef DUMP_KEY_ARRAY
+#	CG_CPP_FLAGS += -DDUMP_KEY_ARRAY
+# endif
+
+# Compute a hash of CG_CPP_FLAGS to create a unique dependency file
+CG_CPP_FLAGS_HASH := $(shell echo '$(CG_CPP_FLAGS)' | md5sum | cut -d ' ' -f1)
+
+# Define a dummy file that depends on CG_CPP_FLAGS
+CG_CPP_FLAGS_FILE := .cg_cpp_flags_$(CG_CPP_FLAGS_HASH)
+
+OBJS = cg_cpp.o \
+       ${COMMON}/c_print_results.o \
+       ${COMMON}/c_timers.o \
+       ${COMMON}/c_wtime.o \
+       m5op.o
+
+${PROGRAM}: config ${OBJS}
+	${CLINK} ${CLINKFLAGS} -o ${PROGRAM} ${OBJS} ${C_LIB}
+
+# General rule for compiling .cc files to .o
+.c.o:
+	${CCOMPILE} $<
+
+# Modify the rule for cg_cpp.o to include CG_CPP_FLAGS and the dependency file
+cg_cpp.o: cg_cpp.cpp npbparams.h $(CG_CPP_FLAGS_FILE)
+	${CCOMPILE} ${CG_CPP_FLAGS} $<
+
+# Rule to create the dummy dependency file
+$(CG_CPP_FLAGS_FILE):
+	@touch $@
+
+# Rule for m5op.o
+m5op.o:  ${GEM5_HOME}/util/m5/build/x86/abi/x86/m5op.S
+	$(CC) $(C_INC) $(CFLAGS) -c $^ -o $@
+
+# Clean up generated files
+clean:
+	- rm -f *.o *~ mputil* .cg_cpp_flags_*
+	- rm -f npbparams.h core
+	- if [ -d rii_files ]; then rm -r rii_files; fi

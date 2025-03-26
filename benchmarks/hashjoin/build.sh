@@ -1,0 +1,1 @@
+bash compile_all.sh GEM5

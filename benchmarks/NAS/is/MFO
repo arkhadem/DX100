@@ -1,0 +1,72 @@
+SHELL=/bin/sh
+BENCHMARK=is
+BENCHMARKU=IS
+GEM5_HOME=../../../../../..
+
+include ../config/make.def
+
+include ../sys/make.common
+
+# Define IS_FLAGS to hold additional compilation flags
+IS_FLAGS =
+
+# If TILE_SIZE is defined, add -DTILE_SIZE=<value> to IS_FLAGS
+ifdef TILE_SIZE
+	IS_FLAGS += -DTILE_SIZE=$(TILE_SIZE)
+endif
+
+# If DO_VERIFY is defined, add -DDO_VERIFY to IS_FLAGS
+ifdef DO_VERIFY
+	IS_FLAGS += -DDO_VERIFY
+endif
+
+ifdef GEM5
+	IS_FLAGS += -DGEM5
+else
+	IS_FLAGS += -DFUNC
+endif
+
+ifdef DUMP_KEY_ARRAY
+	IS_FLAGS += -DDUMP_KEY_ARRAY
+endif	
+
+ifdef USE_KEY_ARRAY_FILE
+	IS_FLAGS += -DUSE_KEY_ARRAY_FILE
+endif
+
+# Compute a hash of IS_FLAGS to create a unique dependency file
+IS_FLAGS_HASH := $(shell echo '$(IS_FLAGS)' | md5sum | cut -d ' ' -f1)
+
+# Define a dummy file that depends on IS_FLAGS
+IS_FLAGS_FILE := .is_flags_$(IS_FLAGS_HASH)
+
+OBJS = is.o \
+       ${COMMON}/c_print_results.o \
+       ${COMMON}/c_timers.o \
+       ${COMMON}/c_wtime.o \
+       m5op.o
+
+${PROGRAM}: config ${OBJS}
+	${CLINK} ${CLINKFLAGS} -o ${PROGRAM} ${OBJS} ${C_LIB}
+
+# General rule for compiling .c files to .o
+.c.o:
+	${CCOMPILE} $<
+
+# Modify the rule for is.o to include IS_FLAGS and the dependency file
+is.o: is.cpp npbparams.h $(IS_FLAGS_FILE)
+	${CCOMPILE} ${IS_FLAGS} $<
+
+# Rule to create the dummy dependency file
+$(IS_FLAGS_FILE):
+	@touch $@
+
+# Rule for m5op.o
+m5op.o: $(GEM5_HOME)/util/m5/build/x86/abi/x86/m5op.S
+	$(CC) $(C_INC) $(CFLAGS) -c $^ -o $@
+
+# Clean up generated files
+clean:
+	- rm -f *.o *~ mputil* .is_flags_*
+	- rm -f npbparams.h core
+	- if [ -d rii_files ]; then rm -r rii_files; fi

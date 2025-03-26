@@ -1,0 +1,48 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.log
+
+# McPAT custom
+mcpat
+obj_opt/
+build*
+
+# vim
+.*.swo
+.*.swp
+
+# Unit-Test
+unit_test/output
+
+# # CMake
+# build*
+
+# Profiling
+gmon.out
+profile*.txt

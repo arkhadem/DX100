@@ -1,0 +1,43 @@
+Frontend:
+  impl: SimpleO3
+  clock_ratio: 2
+  traces:
+    - /data/arkhadem/UME_MEM/gradzatp::loop1.txt
+  bubble_count: 5
+  ipc: 5
+  inst_window_depth: 128
+  llc_latency: 42
+  llc_linesize: 64
+  llc_associativity: 16
+  llc_capacity_per_core: 2MB
+  llc_num_mshr_per_core: 16
+  Translation:
+    impl: RandomTranslation
+    pagesize_KB: 4
+    max_addr: 17179869184
+  
+
+MemorySystem:
+  impl: GenericDRAM
+  clock_ratio: 1
+
+  DRAM:
+    impl: DDR4
+    org:
+      preset: DDR4_16Gb_x8
+      channel: 1
+      rank: 1
+    timing:
+      preset: DDR4_3200W 
+
+  Controller:
+    impl: Generic
+    queue_size: 32
+    Scheduler:
+      impl: FRFCFS
+    RefreshManager:
+      impl: AllBank
+    plugins:
+
+  AddrMapper:
+    impl: RoBaRaCoCh

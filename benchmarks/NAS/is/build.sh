@@ -1,0 +1,1 @@
+bash make_all.sh GEM5

@@ -1,0 +1,12 @@
+*.swp
+**/*.swp
+docs/*
+build/*
+build_*
+modulefiles/
+src/python/env
+.vscode/
+*.pyc
+spatter-cuda-test.out
+json.tar.xz
+test-data

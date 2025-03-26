@@ -1,0 +1,38 @@
+Frontend:
+  impl: LoadStoreTrace
+  clock_ratio: 2
+  num_expected_insts: 300000
+  path: /data/arkhadem/UME_MEM/gradzatp::loop1.txt
+  sort_trace: -1
+  coalesce_trace: -1
+  coalesce_sort_trace: -1
+  interleave_trace: -1
+  Translation:
+    impl: RandomTranslation
+    pagesize_KB: 4
+    max_addr: 17179869184
+
+MemorySystem:
+  impl: GenericDRAM
+  clock_ratio: 1
+
+  DRAM:
+    impl: DDR4
+    org:
+      preset: DDR4_16Gb_x8
+      channel: 1
+      rank: 1
+    timing:
+      preset: DDR4_3200W 
+
+  Controller:
+    impl: Generic
+    queue_size: 32
+    Scheduler:
+      impl: FRFCFS
+    RefreshManager:
+      impl: AllBank
+    plugins:
+
+  AddrMapper:
+    impl: RoBaRaCoCh

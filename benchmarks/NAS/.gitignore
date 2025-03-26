@@ -1,0 +1,7 @@
+*.txt
+*.o
+m5out*
+*_data.h
+key_array.*
+is_*
+cg_*

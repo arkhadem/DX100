@@ -1,0 +1,53 @@
+Import('*')
+
+SimObject('MAA.py', sim_objects=['MAA'])
+
+Source('SPD.cc')
+Source('IF.cc')
+Source('Tables.cc')
+Source('IndirectAccess.cc')
+Source('StreamAccess.cc')
+Source('Invalidator.cc')
+Source('ALU.cc')
+Source('RangeFuser.cc')
+Source('CpuSidePort.cc')
+Source('CacheSidePort.cc')
+Source('MemSidePort.cc')
+Source('Port.cc')
+Source('MAA.cc')
+
+DebugFlag('MAA')
+DebugFlag('MAATrace')
+DebugFlag('MAAPort')
+DebugFlag('SPD')
+DebugFlag('MAACpuPort')
+DebugFlag('MAACachePort')
+DebugFlag('MAAMemPort')
+DebugFlag('MAAController')
+DebugFlag('MAARequestTable')
+DebugFlag('MAARowTable')
+DebugFlag('MAAOffsetTable')
+DebugFlag('MAAIndirect')
+DebugFlag('MAAStream')
+DebugFlag('MAAInvalidator')
+DebugFlag('MAAALU')
+DebugFlag('MAARangeFuser')
+
+# MAA Tags is so outrageously verbose, printing the MAA's entire tag
+# array on each timing access, that you should probably have to ask for
+# it explicitly even above and beyond MAAAll.
+CompoundFlag('MAAAll', ['MAA',
+                        'MAAPort',
+                        'SPD',
+                        'MAACpuPort',
+                        'MAACachePort',
+                        'MAAMemPort',
+                        'MAAController',
+                        'MAARequestTable',
+                        'MAARowTable',
+                        'MAAOffsetTable',
+                        'MAAIndirect',
+                        'MAAStream',
+                        'MAAInvalidator',
+                        'MAAALU',
+                        'MAARangeFuser'])
