@@ -18,5 +18,6 @@ fi
 
 # Run the cmake commands with the selected build flag
 rm -rf build 2>&1 > /dev/null
+mkdir -p build
 cmake -DCMAKE_BUILD_TYPE=Release $BUILD_FLAG -B build -S .
 cmake --build build -j
