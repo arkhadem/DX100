@@ -18,5 +18,5 @@ fi
 
 # Run the cmake commands with the selected build flag
 rm -rf build 2>&1 > /dev/null
-/home/arkhadem/cmake-3.31.5/bin/cmake -DCMAKE_BUILD_TYPE=Release $BUILD_FLAG -B build -S .
-/home/arkhadem/cmake-3.31.5/bin/cmake --build build -j
+cmake -DCMAKE_BUILD_TYPE=Release $BUILD_FLAG -B build -S .
+cmake --build build -j
