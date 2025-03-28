@@ -73,9 +73,13 @@ sudo apt install build-essential git m4 scons zlib1g zlib1g-dev \
 
 These scripts require Python 3.6+ and `matplotlib` package.
 
+### Benchmarks
+
+CMake 3.25+ is required for the Spatter benchmark.
+
 ## Build
 
-Building this artifact requires 
+Building this artifact requires 6GB disk space and takes around 25 minutes.
 
 ### 1- Clone Repository
 
@@ -120,7 +124,66 @@ bash build.sh
 
 ## Run Artifact
 
+Before running the artifact, you can remove the current results.
+
 ```bash
-cd $GEM5_HOME
-python3 
+rm $GEM5_HOME/results
 ```
+
+Use the following scripts to run the simulation, parse the simulation results, and plotting the charts.
+
+```bash
+benchmark.py -j NUM_THREADS -a all -dir /path/to/data/dir
+```
+
+- `NUM_THREADS` is the number of simultaneous simulations. Each simulation requires ~35GB memory. Set this parameter based on your available system memory.
+- `/path/to/data/dir` is the path to the data directory where the Gem5 simulation results will be stores with at least 20GB disk space.
+- `all`: runs all thre steps. Alternatively, you can set it to `simulate`, `parse`, or `plot` to run the simulation, parse the results, and plot the figures separately.
+
+**How to Ensure Each Step Runs Correctly?**
+
+- **After simulation**:  
+  You can verify the simulation step by checking the logs located in the `/path/to/data/dir/results` directory.
+
+- **After parsing**:  
+  The raw results will be available in the `results/results.csv` file.
+
+- **After plotting**:  
+  The following charts will be generated in the `results` directory:
+  - `speedup.png`
+  - `bandwidth.png`
+  - `Row_Buffer_Hitrate.png`
+  - `Request_Buffer_Occupancy.png`
+  - `instruction_reduction.png`
+  - `MPKI.png`
+
+## Citation
+
+If you use *DX100*, please cite this paper:
+
+> Alireza Khadem, Kamalavasan Kamalakkannan, Zhenyan Zhu, Akash Poptani, Yufeng Gu, Jered Benjamin Dominguez-Trujillo, Nishil Talati, Daichi Fujiki, Scott Mahlke, Galen Shipman, and Reetuparna Das
+> *DX100: Programmable Data Access Accelerator for Indirection*,
+> In Proceedings of the 52th Annual International Symposium on Computer Architecture (ISCA'25)
+
+```
+@inproceedings{dx100,
+  title={DX100: Programmable Data Access Accelerator for Indirection},
+  author={Khadem, Alireza and Kamalakkannan, Kamalavasan and Zhu, Zhenyan and Poptani, Akash and Gu, Yufeng and Dominguez-Trujillo, Jered Benjamin and Talati, Nishil and Fujiki, Daichi and Mahlke, Scott and Shipman, Galen and Das, Reetuparna},
+  booktitle={Proceedings of the 52th Annual International Symposium on Computer Architecture}, 
+  year={2025}
+}
+```
+
+## Issues and bug reporting
+
+We appreciate any feedback and suggestions from the community.
+Feel free to raise an issue or submit a pull request on Github.
+For assistance in using DX100, please contact: Alireza Khadem (arkhadem@umich.edu)
+
+## Licensing
+
+This repository is available under a [MIT license](/LICENSE).
+
+## Acknowledgement
+
+This work was supported in part by the NSF under the CAREER-1652294 and NSF-1908601 awards, JST PRESTO Grant Number JPMJPR22P7, and Los Alamos National Lab gift awards.

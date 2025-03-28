@@ -17,8 +17,6 @@ all_SPATTER_kernels = ["xrage"]
 all_HASHJOIN_kernels = ["PRH", "PRO"]
 all_UME_kernels = ["gradzatp", "gradzatz", "gradzatz_invert", "gradzatp_invert"]
 
-os.system("mkdir -p " + LOG_DIR)
-
 tasks = []
 lock = Lock()
 
@@ -363,7 +361,8 @@ def set_data_directory(path):
     global LOG_DIR
     global BNCH_DIR
     DATA_DIR = path
-    CPT_DIR = f"{DATA_DIR}/checkpoints_AE"
-    RSLT_DIR = f"{DATA_DIR}/results_AE"
-    LOG_DIR = f"{DATA_DIR}/logs_AE"
+    CPT_DIR = f"{DATA_DIR}/checkpoints"
+    RSLT_DIR = f"{DATA_DIR}/results"
+    LOG_DIR = f"{DATA_DIR}/logs"
     BNCH_DIR = f"{GEM5_DIR}/benchmarks"
+    os.system("mkdir -p " + LOG_DIR)
