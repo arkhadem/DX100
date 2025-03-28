@@ -127,10 +127,10 @@ bash build.sh
 Before running the artifact, you can remove the current results.
 
 ```bash
-rm $GEM5_HOME/results
+rm -r $GEM5_HOME/results
 ```
 
-Use the following scripts to run the simulation, parse the simulation results, and plotting the charts.
+Use the following script to run the simulations, parse the results, and plot the charts.
 
 ```bash
 cd $GEM5_HOME
@@ -142,7 +142,7 @@ python3 scripts/benchmark.py -j NUM_THREADS -a all -dir /path/to/data/dir
 - `/path/to/data/dir` is the directory where gem5 simulation results will be saved. Ensure it has at least *20GB of free disk space*.  
   **Note:** If you are using the Docker container, set this path to `/data`.
 
-- `all` runs the full pipeline, including simulation, result parsing, and figure plotting.  
+- `all` runs the full pipeline, including simulation, result parsing, and chart plotting.  
   Alternatively, you can specify `simulate`, `parse`, or `plot` to execute each step individually.
 
 ### How Long Simulation Takes?
