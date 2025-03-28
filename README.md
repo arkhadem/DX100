@@ -1,43 +1,43 @@
 # Artifcat of the DX100 Paper, ISCA 2025
 
-This repository provides the GEM5 simulator, benchmarks, and automation scripts required for the artifact evaluation of the "DX100: A Programmable Data Access Accelerator for Indirection" paper published in ISCA 2025.
+This repository provides the gem5 simulator, benchmarks, and automation scripts required for the artifact evaluation of the "DX100: A Programmable Data Access Accelerator for Indirection" paper published in ISCA 2025.
 
 ## Directory Structure
 
 The repo structure is as follows:
-  - [src/mem/MAA](/src/mem/MAA/): GEM5 source code of DX100.
-  - [configs/common](/configs/common/): GEM5 Python scripts for DX100 configuration.
+  - [src/mem/MAA](/src/mem/MAA/): gem5 source code of DX100.
+  - [configs/common](/configs/common/): gem5 Python scripts for DX100 configuration.
   - [benchmarks](/benchmarks/): DX100 memory-mapped and functional simulator APIs, as well as the evaluated kernels from NAS, GAP, Hash-Join, UME, and Spatter benchmark suites.
   - [scripts](/scripts/): Automation scripts required for running the simulations, parsing the results, and plotting the charts.
   - [results](/results/): After running the automation scripts, raw results and charts are stored in this directory.
 
 ## Requirements
 
-This artifact requires the following dependencies. To ease the evaluation of this artifact, we have pre-installed all requirements in a docker image. We suggest using docker containers to reduce the setup effort:
+This artifact has several dependencies. To simplify the evaluation process, we provide a Docker image with all required dependencies pre-installed. We recommend using the Docker container to minimize setup time and ensure a consistent environment.
 
 ```bash
 docker pull arkhadem95/dx100:latest
 docker run -it --name dx100_container -v /path/to/data/dir:/data -w /home/ubuntu arkhadem95/dx100 bash
 ```
 
-Where `/path/to/data/dir` is your data directory with at least 20GB disk space.
+*Note:* `/path/to/data/dir` should point to your data directory, which must have at least 20GB of available disk space.
 
-If you choose to run artifact locally, you can use install the following dependencies:
+If you choose to run the artifact locally instead of using Docker, please ensure the following dependencies are installed:
 
 ### Ramulator2
 
 Ramulator2 is tested with `g++-12` and `clang++-15` compilers.
 
-### Gem5
+### gem5
 
-Gem5 requires the following dependencies (taken from [Gem5 documentations](https://www.gem5.org/documentation/general_docs/building)):
+gem5 requires the following dependencies (from [gem5 documentations](https://www.gem5.org/documentation/general_docs/building)):
 
-- `SCons`: gem5 uses SCons as its build environment. SCons 3.0 or greater must be used.
+- SCons: gem5 uses SCons as its build environment. SCons 3.0 or greater must be used.
 - Python 3.6+: gem5 relies on Python development libraries. gem5 can be compiled and run in environments using Python 3.6+.
 - protobuf 2.1+ (Optional): The protobuf library is used for trace generation and playback.
 - Boost (Optional): The Boost library is a set of general purpose C++ libraries. It is a necessary dependency if you wish to use the SystemC implementation.
 
-**Setup Gem5 on Ubuntu 24.04 (gem5 >= v24.0)**
+**Setup gem5 on Ubuntu 24.04 (gem5 >= v24.0)**
 
 If compiling gem5 on Ubuntu 24.04, or related Linux distributions, you may install all these dependencies using APT:
 
@@ -48,7 +48,7 @@ sudo apt install build-essential scons python3-dev git pre-commit zlib1g zlib1g-
     m4 libcapstone-dev libpng-dev libelf-dev pkg-config wget cmake doxygen
 ```
 
-**Setup Gem5 on Ubuntu 22.04 (gem5 >= v21.1)**
+**Setup gem5 on Ubuntu 22.04 (gem5 >= v21.1)**
 
 If compiling gem5 on Ubuntu 22.04, or related Linux distributions, you may install all these dependencies using APT:
 
@@ -58,7 +58,7 @@ sudo apt install build-essential git m4 scons zlib1g zlib1g-dev \
     python3-dev libboost-all-dev pkg-config python3-tk
 ```
 
-**Setup Gem5 on Ubuntu 20.04 (gem5 >= v21.0)**
+**Setup gem5 on Ubuntu 20.04 (gem5 >= v21.0)**
 
 If compiling gem5 on Ubuntu 20.04, or related Linux distributions, you may install all these dependencies using APT:
 
@@ -79,20 +79,20 @@ CMake 3.25+ is required for the Spatter benchmark.
 
 ## Build
 
-Building this artifact requires 6GB disk space and takes around 25 minutes.
+Building the artifact requires approximately 6GB of disk space and takes around 35 minutes to complete.
 
 ### 1- Clone Repository
 
 ```bash
 git clone https://github.com/arkhadem/DX100.git
 cd DX100
-export GEM5_HOME=$(pwd)
+export gem5_HOME=$(pwd)
 ```
 
 ### 2- Build Ramulator2
 
 ```bash
-cd $GEM5_HOME/ext/ramulator2/ramulator2/
+cd $gem5_HOME/ext/ramulator2/ramulator2/
 mkdir build; cd build;
 cmake .. -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12
 make -j
@@ -100,17 +100,17 @@ make -j
 
 ### 3- Build M5ops
 
-Refer to [Gem5 documentations](https://www.gem5.org/documentation/general_docs/m5ops/) for more information:
+Refer to [gem5 documentations](https://www.gem5.org/documentation/general_docs/m5ops/) for more information:
 
 ```bash
-cd $GEM5_HOME/util/m5
+cd $gem5_HOME/util/m5
 scons build/x86/out/m5 -j8
 ```
 
-### 4- Build Gem5
+### 4- Build gem5
 
 ```bash
-cd $GEM5_HOME
+cd $gem5_HOME
 bash scripts/make.sh
 bash scripts/make_fast.sh
 ```
@@ -118,7 +118,7 @@ bash scripts/make_fast.sh
 ### 5- Build Benchmarks
 
 ```bash
-cd $GEM5_HOME/benchmarks
+cd $gem5_HOME/benchmarks
 bash build.sh
 ```
 
@@ -127,7 +127,7 @@ bash build.sh
 Before running the artifact, you can remove the current results.
 
 ```bash
-rm $GEM5_HOME/results
+rm $gem5_HOME/results
 ```
 
 Use the following scripts to run the simulation, parse the simulation results, and plotting the charts.
@@ -137,7 +137,7 @@ benchmark.py -j NUM_THREADS -a all -dir /path/to/data/dir
 ```
 
 - `NUM_THREADS` is the number of simultaneous simulations. Each simulation requires ~35GB memory. Set this parameter based on your available system memory.
-- `/path/to/data/dir` is the path to the data directory where the Gem5 simulation results will be stores with at least 20GB disk space.
+- `/path/to/data/dir` is the path to the data directory where the gem5 simulation results will be stores with at least 20GB disk space.
 - `all`: runs all thre steps. Alternatively, you can set it to `simulate`, `parse`, or `plot` to run the simulation, parse the results, and plot the figures separately.
 
 **How to Ensure Each Step Runs Correctly?**
