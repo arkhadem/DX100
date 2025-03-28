@@ -195,4 +195,4 @@ This repository is available under a [MIT license](/LICENSE).
 
 ## Acknowledgement
 
-This work was supported in part by the NSF under the CAREER-1652294 and NSF-1908601 awards, JST PRESTO Grant Number JPMJPR22P7, and Los Alamos National Lab gift awards.
+This work was supported in part by the NSF-1908601 award, JST PRESTO Grant Number JPMJPR22P7, and research funds from Los Alamos National Lab.
