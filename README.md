@@ -86,13 +86,13 @@ Building the artifact requires approximately 6GB of disk space and takes around 
 ```bash
 git clone https://github.com/arkhadem/DX100.git
 cd DX100
-export gem5_HOME=$(pwd)
+export GEM5_HOME=$(pwd)
 ```
 
 ### 2- Build Ramulator2
 
 ```bash
-cd $gem5_HOME/ext/ramulator2/ramulator2/
+cd $GEM5_HOME/ext/ramulator2/ramulator2/
 mkdir build; cd build;
 cmake .. -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12
 make -j
@@ -103,14 +103,14 @@ make -j
 Refer to [gem5 documentations](https://www.gem5.org/documentation/general_docs/m5ops/) for more information:
 
 ```bash
-cd $gem5_HOME/util/m5
+cd $GEM5_HOME/util/m5
 scons build/x86/out/m5 -j8
 ```
 
 ### 4- Build gem5
 
 ```bash
-cd $gem5_HOME
+cd $GEM5_HOME
 bash scripts/make.sh
 bash scripts/make_fast.sh
 ```
@@ -118,7 +118,7 @@ bash scripts/make_fast.sh
 ### 5- Build Benchmarks
 
 ```bash
-cd $gem5_HOME/benchmarks
+cd $GEM5_HOME/benchmarks
 bash build.sh
 ```
 
@@ -127,20 +127,29 @@ bash build.sh
 Before running the artifact, you can remove the current results.
 
 ```bash
-rm $gem5_HOME/results
+rm $GEM5_HOME/results
 ```
 
 Use the following scripts to run the simulation, parse the simulation results, and plotting the charts.
 
 ```bash
-benchmark.py -j NUM_THREADS -a all -dir /path/to/data/dir
+cd $GEM5_HOME
+python3 scripts/benchmark.py -j NUM_THREADS -a all -dir /path/to/data/dir
 ```
 
-- `NUM_THREADS` is the number of simultaneous simulations. Each simulation requires ~35GB memory. Set this parameter based on your available system memory.
-- `/path/to/data/dir` is the path to the data directory where the gem5 simulation results will be stores with at least 20GB disk space.
-- `all`: runs all thre steps. Alternatively, you can set it to `simulate`, `parse`, or `plot` to run the simulation, parse the results, and plot the figures separately.
+- `NUM_THREADS` specifies the number of parallel simulations. Each simulation requires approximately *35GB of memory*, so set this value based on your system's available DRAM.
 
-**How to Ensure Each Step Runs Correctly?**
+- `/path/to/data/dir` is the directory where gem5 simulation results will be saved. Ensure it has at least *20GB of free disk space*.  
+  **Note:** If you are using the Docker container, set this path to `/data`.
+
+- `all` runs the full pipeline, including simulation, result parsing, and figure plotting.  
+  Alternatively, you can specify `simulate`, `parse`, or `plot` to execute each step individually.
+
+### How Long Simulation Takes?
+
+Using a single thread, the complete end-to-end execution takes approximately *84 hours*. By setting `NUM_THREADS` to `4`, the execution time is reduced to around *24 hours* that requires approximately *140GB of memory*.
+
+### How to Ensure Each Step Runs Correctly?
 
 - **After simulation**:  
   You can verify the simulation step by checking the logs located in the `/path/to/data/dir/results` directory.
