@@ -14,6 +14,7 @@ include(CompilerType)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
+add_compile_options(-Wno-unused-variable -Wno-unused-result)
 
 include(pkgs/JSONSupport)
 include(pkgs/MPISupport)

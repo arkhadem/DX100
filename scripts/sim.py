@@ -3,11 +3,11 @@ from threading import Thread, Lock
 
 ### get the parent directory where this script is located
 GEM5_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = "/data4/arkhadem/gem5-hpc"
-CPT_DIR = f"{DATA_DIR}/checkpoints_AE"
-RSLT_DIR = f"{DATA_DIR}/results_AE"
-LOG_DIR = f"{DATA_DIR}/logs_AE"
-BNCH_DIR = f"{GEM5_DIR}/benchmarks"
+DATA_DIR = None
+CPT_DIR = None
+RSLT_DIR = None
+LOG_DIR = None
+BNCH_DIR = None
 
 all_modes = ["BASE", "MAA"]
 
@@ -355,3 +355,15 @@ def run_simulation(parallelism, force_rerun):
         for i in range(parallelism):
             print("T[M]: Waiting for T[{}] to join!".format(i))
             threads[i].join()
+
+def set_data_directory(path):
+    global DATA_DIR
+    global CPT_DIR
+    global RSLT_DIR
+    global LOG_DIR
+    global BNCH_DIR
+    DATA_DIR = path
+    CPT_DIR = f"{DATA_DIR}/checkpoints_AE"
+    RSLT_DIR = f"{DATA_DIR}/results_AE"
+    LOG_DIR = f"{DATA_DIR}/logs_AE"
+    BNCH_DIR = f"{GEM5_DIR}/benchmarks"

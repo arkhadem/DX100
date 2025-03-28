@@ -543,7 +543,7 @@ def read_results(line, num_channels):
     return kernel, mode, cycle, DRAM_BW_util, DRAM_RB_hitrate, DRAM_CTRL_occ, total_instrs, L1_MPKI, L2_MPKI, L3_MPKI
 
 
-def depict_results(results_path, result_dir, num_channels):
+def plot_results(results_path, result_dir, num_channels):
     results = {}
     kernels = []
     with open(results_path, "r") as f:

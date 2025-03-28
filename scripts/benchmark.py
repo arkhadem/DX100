@@ -1,18 +1,19 @@
 import argparse
-from sim import run_simulation
-from parse import parse_results
-from parse import parse_header
-from parse import depict_results
+from sim import run_simulation, set_data_directory
+from parse import parse_results, parse_header, plot_results
 import os
 
 DATA_DIR = "/data4/arkhadem/gem5-hpc"
 RSLT_DIR = f"{DATA_DIR}/results_AE"
 
 parser = argparse.ArgumentParser(description='Benchmarking script')
-parser.add_argument('-j', type=int, default=8, help='Number of parallel simulations')
-parser.add_argument('-a', type=str, default='all', choices=['simulate', 'parse', 'depict', 'all'], help='Action to perform')
+parser.add_argument('-j', type=int, required=True, help='Number of parallel simulations')
+parser.add_argument('-a', type=str, default='all', choices=['simulate', 'parse', 'plot', 'all'], help='Action to perform')
 parser.add_argument('-f', action='store_true', help='Rerun finished simulations')
+parser.add_argument('-dir', type=str, required=True, help='Data directory used for storing Gem5 simulation results')
 args = parser.parse_args()
+
+set_data_directory(args.dir)
 
 if args.a == 'simulate' or args.a == 'all':
     print(f'Simulating with {args.j} parallel processes')
@@ -52,5 +53,5 @@ if args.a == 'parse' or args.a == 'all':
         f.write("GZZI,BASE,2M," + parse_results(f"{RSLT_DIR}/gradzatz_invert/BASE/2M", 1, "BASE",  2) + "\n")
         f.write("GZZI,MAA,2M," + parse_results(f"{RSLT_DIR}/gradzatz_invert/MAA/2M", 1, "MAA",  2) + "\n")
 
-if args.a == "depict" or args.a == "all":
-    depict_results("results/results.csv", "results", 2)
+if args.a == "plot" or args.a == "all":
+    plot_results("results/results.csv", "results", 2)

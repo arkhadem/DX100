@@ -1,23 +1,43 @@
+# Artifcat of the DX100 Paper, ISCA 2025
+
+This repository provides the GEM5 simulator, benchmarks, and automation scripts required for the artifact evaluation of the "DX100: A Programmable Data Access Accelerator for Indirection" paper published in ISCA 2025.
+
+## Directory Structure
+
+The repo structure is as follows:
+  - [src/mem/MAA](/src/mem/MAA/): GEM5 source code of DX100.
+  - [configs/common](/configs/common/): GEM5 Python scripts for DX100 configuration.
+  - [benchmarks](/benchmarks/): DX100 memory-mapped and functional simulator APIs, as well as the evaluated kernels from NAS, GAP, Hash-Join, UME, and Spatter benchmark suites.
+  - [scripts](/scripts/): Automation scripts required for running the simulations, parsing the results, and plotting the charts.
+  - [results](/results/): After running the automation scripts, raw results and charts are stored in this directory.
+
 ## Requirements
 
-### Ramulator2:
+This artifact requires the following dependencies. To ease the evaluation of this artifact, we have pre-installed all requirements in a docker image. We suggest using docker containers to reduce the setup effort:
 
-- g++-12
-- clang++-15
+```bash
+docker pull arkhadem95/dx100:latest
+docker run -it --name dx100_container -v /path/to/data/dir:/data -w /home/ubuntu arkhadem95/dx100 bash
+```
 
-### Gem5:
+Where `/path/to/data/dir` is your data directory with at least 20GB disk space.
 
-https://www.gem5.org/documentation/general_docs/building
+If you choose to run artifact locally, you can use install the following dependencies:
 
-- git : gem5 uses git for version control.
-- gcc: gcc is used to compiled gem5. Version >=10 must be used. We support up to gcc Version 13.
-- Clang: Clang can also be used. At present, we support Clang 7 to Clang 16 (inclusive).
-- SCons : gem5 uses SCons as its build environment. SCons 3.0 or greater must be used.
-- Python 3.6+ : gem5 relies on Python development libraries. gem5 can be compiled and run in environments using Python 3.6+.
+### Ramulator2
+
+Ramulator2 is tested with `g++-12` and `clang++-15` compilers.
+
+### Gem5
+
+Gem5 requires the following dependencies (taken from [Gem5 documentations](https://www.gem5.org/documentation/general_docs/building)):
+
+- `SCons`: gem5 uses SCons as its build environment. SCons 3.0 or greater must be used.
+- Python 3.6+: gem5 relies on Python development libraries. gem5 can be compiled and run in environments using Python 3.6+.
 - protobuf 2.1+ (Optional): The protobuf library is used for trace generation and playback.
 - Boost (Optional): The Boost library is a set of general purpose C++ libraries. It is a necessary dependency if you wish to use the SystemC implementation.
 
-**Setup on Ubuntu 24.04 (gem5 >= v24.0)**
+**Setup Gem5 on Ubuntu 24.04 (gem5 >= v24.0)**
 
 If compiling gem5 on Ubuntu 24.04, or related Linux distributions, you may install all these dependencies using APT:
 
@@ -28,7 +48,7 @@ sudo apt install build-essential scons python3-dev git pre-commit zlib1g zlib1g-
     m4 libcapstone-dev libpng-dev libelf-dev pkg-config wget cmake doxygen
 ```
 
-**Setup on Ubuntu 22.04 (gem5 >= v21.1)**
+**Setup Gem5 on Ubuntu 22.04 (gem5 >= v21.1)**
 
 If compiling gem5 on Ubuntu 22.04, or related Linux distributions, you may install all these dependencies using APT:
 
@@ -38,7 +58,7 @@ sudo apt install build-essential git m4 scons zlib1g zlib1g-dev \
     python3-dev libboost-all-dev pkg-config python3-tk
 ```
 
-**Setup on Ubuntu 20.04 (gem5 >= v21.0)**
+**Setup Gem5 on Ubuntu 20.04 (gem5 >= v21.0)**
 
 If compiling gem5 on Ubuntu 20.04, or related Linux distributions, you may install all these dependencies using APT:
 
@@ -49,25 +69,58 @@ sudo apt install build-essential git m4 scons zlib1g zlib1g-dev \
     python3-tk
 ```
 
+### Automation Scripts
+
+These scripts require Python 3.6+ and `matplotlib` package.
+
 ## Build
 
-### Ramulator2
+Building this artifact requires 
 
-cd DX100/ext/ramulator2/ramulator2/
-mkdir build & cd build
+### 1- Clone Repository
+
+```bash
+git clone https://github.com/arkhadem/DX100.git
+cd DX100
+export GEM5_HOME=$(pwd)
+```
+
+### 2- Build Ramulator2
+
+```bash
+cd $GEM5_HOME/ext/ramulator2/ramulator2/
+mkdir build; cd build;
 cmake .. -DCMAKE_C_COMPILER=gcc-12 -DCMAKE_CXX_COMPILER=g++-12
 make -j
+```
 
-### M5ops
+### 3- Build M5ops
 
-https://www.gem5.org/documentation/general_docs/m5ops/
-cd DX100/util/m5
+Refer to [Gem5 documentations](https://www.gem5.org/documentation/general_docs/m5ops/) for more information:
+
+```bash
+cd $GEM5_HOME/util/m5
 scons build/x86/out/m5 -j8
+```
 
-### Gem5
+### 4- Build Gem5
 
-cd DX100
-bash scripts/make.sh # press ENTER, y, ENTER
-bash scripts/make_fast.sh # press ENTER, y, ENTER
+```bash
+cd $GEM5_HOME
+bash scripts/make.sh
+bash scripts/make_fast.sh
+```
 
-### Benchmarks
+### 5- Build Benchmarks
+
+```bash
+cd $GEM5_HOME/benchmarks
+bash build.sh
+```
+
+## Run Artifact
+
+```bash
+cd $GEM5_HOME
+python3 
+```
