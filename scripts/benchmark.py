@@ -3,9 +3,6 @@ from sim import run_simulation, set_data_directory
 from parse import parse_results, parse_header, plot_results
 import os
 
-DATA_DIR = "/data4/arkhadem/gem5-hpc"
-RSLT_DIR = f"{DATA_DIR}/results_AE"
-
 parser = argparse.ArgumentParser(description='Benchmarking script')
 parser.add_argument('-j', type=int, required=True, help='Number of parallel simulations')
 parser.add_argument('-a', type=str, default='all', choices=['simulate', 'parse', 'plot', 'all'], help='Action to perform')
@@ -13,7 +10,10 @@ parser.add_argument('-f', action='store_true', help='Rerun finished simulations'
 parser.add_argument('-dir', type=str, required=True, help='Data directory used for storing Gem5 simulation results')
 args = parser.parse_args()
 
-set_data_directory(args.dir)
+DATA_DIR = args.dir
+RSLT_DIR = f"{DATA_DIR}/results_AE"
+
+set_data_directory(DATA_DIR)
 
 if args.a == 'simulate' or args.a == 'all':
     print(f'Simulating with {args.j} parallel processes')
