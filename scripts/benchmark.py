@@ -11,7 +11,7 @@ parser.add_argument('-dir', type=str, required=True, help='Data directory used f
 args = parser.parse_args()
 
 DATA_DIR = args.dir
-RSLT_DIR = f"{DATA_DIR}/results_AE"
+RSLT_DIR = f"{DATA_DIR}/results"
 
 set_data_directory(DATA_DIR)
 
