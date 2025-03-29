@@ -272,12 +272,6 @@ def run_simulation(parallelism, force_rerun):
                                 force_rerun=force_rerun)
 
     ######################################### HASHJOIN ##########################################
-    os.system(f"cp {BNCH_DIR}/hashjoin-ph-2/relR_2M.dat ./")
-    os.system(f"cp {BNCH_DIR}/hashjoin-ph-2/relS_2M.dat ./")
-    os.system(f"cp {BNCH_DIR}/hashjoin-ph-2/relR_4M.dat ./")
-    os.system(f"cp {BNCH_DIR}/hashjoin-ph-2/relS_4M.dat ./")
-    os.system(f"cp {BNCH_DIR}/hashjoin-ph-2/relR_8M.dat ./")
-    os.system(f"cp {BNCH_DIR}/hashjoin-ph-2/relS_8M.dat ./")
     size = 2000000
     size_per_core = 500000
     size_str = "2M"
