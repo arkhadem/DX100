@@ -141,9 +141,9 @@ static int arow[NA];
 // 672KB
 static int acol[NAZ];
 // 1.3MB
-static double aelt[NAZ];
+static float aelt[NAZ];
 // 16MB
-static double a[NZ];
+static float a[NZ];
 #else
 #if NUM_CORES == 4
 #include "cg_data_4C.h"
@@ -156,15 +156,15 @@ static double a[NZ];
 #endif
 #endif
 // 112KB
-static double x[NA + 2];
+static float x[NA + 2];
 // 112KB
-static double z[NA + 2];
+static float z[NA + 2];
 // 112KB
-static double p[NA + 2];
+static float p[NA + 2];
 // 112KB
-static double q[NA + 2];
+static float q[NA + 2];
 // 112KB
-static double r[NA + 2];
+static float r[NA + 2];
 static int naa;
 static int nzz;
 static int firstrow;
@@ -175,11 +175,11 @@ static double amult;
 static double tran;
 
 /* function prototypes */
-static void conj_grad_base(int colidx[], int rowstr[], double x[], double z[], double a[], double p[], double q[], double r[], double *rnorm);
-static void conj_grad_maa(int colidx[], int rowstr[], double x[], double z[], double a[], double p[], double q[], double r[], double *rnorm);
+static void conj_grad_base(int colidx[], int rowstr[], float x[], float z[], float a[], float p[], float q[], float r[], double *rnorm);
+static void conj_grad_maa(int colidx[], int rowstr[], float x[], float z[], float a[], float p[], float q[], float r[], double *rnorm);
 static int icnvrt(double x, int ipwr2);
-static void makea(int n, int nz, double a[], int colidx[], int rowstr[], int firstrow, int lastrow, int firstcol, int lastcol, int arow[], int acol[][NONZER + 1], double aelt[][NONZER + 1], int iv[]);
-static void sparse(double a[], int colidx[], int rowstr[], int n, int nz, int nozer, int arow[], int acol[][NONZER + 1], double aelt[][NONZER + 1], int firstrow, int lastrow, int nzloc[], double rcond, double shift);
+static void makea(int n, int nz, float a[], int colidx[], int rowstr[], int firstrow, int lastrow, int firstcol, int lastcol, int arow[], int acol[][NONZER + 1], float aelt[][NONZER + 1], int iv[]);
+static void sparse(float a[], int colidx[], int rowstr[], int n, int nz, int nozer, int arow[], int acol[][NONZER + 1], float aelt[][NONZER + 1], int firstrow, int lastrow, int nzloc[], double rcond, double shift);
 static void sprnvc(int n, int nz, int nn1, double v[], int iv[]);
 static void vecset(int n, double v[], int iv[], int *nzv, int i, double val);
 
@@ -254,7 +254,7 @@ void save_data_to_file() {
     outfile << "#define CG_DATA_H\n\n";
 
     // Write arrays
-    outfile << "double a[NZ] = {";
+    outfile << "float a[NZ] = {";
     for (int i = 0; i < NZ; i++) {
         outfile << std::scientific << a[i];
         if (i != NZ - 1)
@@ -294,7 +294,7 @@ void save_data_to_file() {
     }
     outfile << "};\n\n";
 
-    outfile << "double aelt[NAZ] = {";
+    outfile << "float aelt[NAZ] = {";
     for (int i = 0; i < NAZ; i++) {
         outfile << std::scientific << aelt[i];
         if (i != NAZ - 1)
@@ -372,7 +372,9 @@ int main(int argc, char **argv) {
     zeta = randlc(&tran, amult);
 
 #ifndef USE_DATA_FROM_FILE
-    makea(naa, nzz, a, colidx, rowstr, firstrow, lastrow, firstcol, lastcol, arow, (int(*)[NONZER + 1])(void *)acol, (double(*)[NONZER + 1])(void *)aelt, iv);
+    std::cout << "makea started!" << std::endl;
+    makea(naa, nzz, a, colidx, rowstr, firstrow, lastrow, firstcol, lastcol, arow, (int(*)[NONZER + 1])(void *)acol, (float(*)[NONZER + 1])(void *)aelt, iv);
+    std::cout << "makea finished!" << std::endl;
 #else
     std::cout << "Using data from file!" << std::endl;
 #endif
@@ -554,23 +556,19 @@ int main(int argc, char **argv) {
  */
 static void conj_grad_maa(int colidx[],
                           int rowstr[],
-                          double x[],
-                          double z[],
-                          double a[],
-                          double p[],
-                          double q[],
-                          double r[],
+                          float x[],
+                          float z[],
+                          float a[],
+                          float p[],
+                          float q[],
+                          float r[],
                           double *rnorm) {
     int j;
     int cgit, cgitmax;
-    double alpha, beta, suml;
-    static double d, sum, rho, rho0;
-    int colidx_tile;
-    int pz_tile;
-    int stride_reg;
-    int k_start_reg;
-    int k_end_reg;
-    double *pz_ptr;
+    float alpha, beta, suml;
+    static float d, sum, rho, rho0;
+    int t0, t1, t2, t3, t4, t5, t6, t7;
+    int r1, r2, r3, r4, r5, r6, r7;
 
     int tid = omp_get_thread_num();
 
@@ -605,11 +603,11 @@ static void conj_grad_maa(int colidx[],
     const int lastcol_firstcol_plus1_divisible_by_32 = (int)(lastcol_firstcol_plus1 / total_thread_iters) * total_thread_iters;
     const int lastrow_firstrow_plus1_divisible_by_64K = ((int)(lastrow_firstrow_plus1 / (NUM_CORES * TILE_SIZE))) * NUM_CORES * TILE_SIZE;
     const int tile_size = 1024;
-    double *my_q = &q[tid * 8];
-    double *my_z = &z[tid * 8];
-    double *my_r = &r[tid * 8];
-    double *my_p = &p[tid * 8];
-    double *my_x = &x[tid * 8];
+    float *my_q = &q[tid * 8];
+    float *my_z = &z[tid * 8];
+    float *my_r = &r[tid * 8];
+    float *my_p = &p[tid * 8];
+    float *my_x = &x[tid * 8];
 
     /* initialize the CG algorithm */
     for (j = 0; j < naa_plus1_divisible_by_32; j += total_thread_iters) {
@@ -642,7 +640,7 @@ static void conj_grad_maa(int colidx[],
 	 * now, obtain the norm of r: First, sum squares of r elements locally...
 	 * --------------------------------------------------------------------
 	 */
-    double rho_tmp = 0.0;
+    float rho_tmp = 0.0;
     for (j = 0; j < lastcol_firstcol_plus1_divisible_by_32; j += total_thread_iters) {
         rho_tmp += my_r[j + 0] * my_r[j + 0];
         rho_tmp += my_r[j + 1] * my_r[j + 1];
@@ -660,22 +658,27 @@ static void conj_grad_maa(int colidx[],
 #pragma omp critical
     {
         rho += rho_tmp;
-        pz_tile = get_new_tile<double>();
-        colidx_tile = get_new_tile<int>();
-        pz_ptr = get_cacheable_tile_pointer<double>(pz_tile);
-        stride_reg = get_new_reg<int>(1);
-        k_start_reg = get_new_reg<int>();
-        k_end_reg = get_new_reg<int>();
+        t0 = get_new_tile<int>();
+        t1 = get_new_tile<int>();
+        t2 = get_new_tile<int>();
+        t3 = get_new_tile<int>();
+        t4 = get_new_tile<int>();
+        t5 = get_new_tile<int>();
+        t6 = get_new_tile<int>();
+        t7 = get_new_tile<int>();
+        r1 = get_new_reg<int>(1);
+        r2 = get_new_reg<int>();
+        r3 = get_new_reg<int>();
+        r4 = get_new_reg<int>();
+        r5 = get_new_reg<int>();
+        r6 = get_new_reg<int>();
+        r7 = get_new_reg<int>();
     }
 
 #pragma omp barrier
 
     /* the conj grad iteration loop */
     for (cgit = 1; cgit <= cgitmax; cgit++) {
-#pragma omp master
-        {
-            std::cout << "cgit: " << cgit << std::endl;
-        }
 
         /*
 		 * ---------------------------------------------------------------------
@@ -706,72 +709,113 @@ static void conj_grad_maa(int colidx[],
         //     }
         //     q[j] = suml;
         // }
+        if (cgit != 1) {
+            for (j = 0; j < naa_plus1_divisible_by_32; j += total_thread_iters) {
+                my_q[j + 0] = 0.0;
+                my_q[j + 1] = 0.0;
+                my_q[j + 2] = 0.0;
+                my_q[j + 3] = 0.0;
+                my_q[j + 4] = 0.0;
+                my_q[j + 5] = 0.0;
+                my_q[j + 6] = 0.0;
+                my_q[j + 7] = 0.0;
+            }
+#pragma omp for schedule(dynamic)
+            for (j = naa_plus1_divisible_by_32; j < naa_plus1; j++) {
+                q[j] = 0.0;
+            }
+        }
 
+        maa_const<int>(lastrow_firstrow_plus1_divisible_by_64K, r5);
 #pragma omp for nowait
         for (int j_base = 0; j_base < lastrow_firstrow_plus1_divisible_by_64K; j_base += TILE_SIZE) {
             int j_max = j_base + TILE_SIZE < lastrow_firstrow_plus1_divisible_by_64K ? j_base + TILE_SIZE : lastrow_firstrow_plus1_divisible_by_64K;
-            int j_curr = j_base;
             int k_base = rowstr[j_base];
             int k_max = rowstr[j_max];
-            int curr_max_row_str = rowstr[j_base + 1];
-            double suml = 0.0;
-            maa_const(k_max, k_end_reg);
+            float *curr_q = &q[j_base];
+            maa_const<int>(j_base, r4);
+            maa_const<int>(k_max, r3);
+            maa_const<int>(0, r6);
+            maa_const<int>(-1, r7);
+            // t2 = rowstr[j]
+            // t3 = rowstr[j + 1]
+            maa_stream_load<int>(rowstr, r4, r5, r1, t2);
+            maa_stream_load<int>(&rowstr[1], r4, r5, r1, t3);
+            // [t0 t1 t4 t5 t6 t7] available
             for (; k_base < k_max; k_base += TILE_SIZE) {
-                maa_const(k_base, k_start_reg);
-                maa_stream_load<int>(colidx, k_start_reg, k_end_reg, stride_reg, colidx_tile);
-                // Transfer colidx_tile
-                maa_indirect_load<double>(p, colidx_tile, pz_tile);
-                int curr_tilek_size = k_max - k_base < TILE_SIZE ? k_max - k_base : TILE_SIZE;
-                int k_curr = k_base;
-                wait_ready(pz_tile);
-                for (int i = 0; i < curr_tilek_size; i++) {
-                    if (k_curr == curr_max_row_str) {
-                        q[j_curr] = suml;
-                        // std::cout << "q[" << j_curr << "] = " << suml << std::endl;
-                        suml = 0.0;
-                        j_curr++;
-                        curr_max_row_str = rowstr[j_curr + 1];
-                    }
-                    // std::cout << "suml(" << suml << ") += a[" << k_curr << "](" << a[k_curr] << ") * p[colidx[" << k_curr << "](" << colidx[k_curr] << ")](" << pz_ptr[i] << " or " << p[colidx[k_curr]] << ")" << std::endl;
-                    suml += a[k_curr] * pz_ptr[i];
-                    k_curr++;
-                }
+                maa_const(k_base, r2);
+                // t0 = j
+                // t1 = k that is not needed
+                maa_range_loop<int>(r6, r7, t2, t3, r1, t0, t1);
+                // [t1 t4 t5 t6 t7] available
+
+                // t6 = colidx[k]
+                maa_stream_load<int>(colidx, r2, r3, r1, t6);
+                // [t1 t4 t5 t7] available
+
+                // t4 = p[colidx[k]]
+                // free t6
+                maa_indirect_load<float>(p, t6, t4);
+                // [t1 t5 t6 t7] available
+
+                // t5 = a[k]
+                maa_stream_load<float>(a, r2, r3, r1, t5);
+                // [t1 t6 t7] available
+
+                // t7 = a[k] * p[colidx[k]]
+                maa_alu_vector<float>(t4, t5, t7, Operation_t::MUL_OP);
+                // [t1 t6] available
+
+                // q[j] += t7
+                maa_indirect_rmw_vector(curr_q, t0, t7, Operation_t::ADD_OP);
+                wait_ready(t7);
             }
-            q[j_curr] = suml;
-            // std::cout << "q[" << j_curr << "] = " << suml << std::endl;
         }
 
 #pragma omp for schedule(dynamic)
         for (int j_base = lastrow_firstrow_plus1_divisible_by_64K; j_base < lastrow_firstrow_plus1; j_base += tile_size) {
             int j_max = j_base + tile_size < lastrow_firstrow_plus1 ? j_base + tile_size : lastrow_firstrow_plus1;
-            int j_curr = j_base;
             int k_base = rowstr[j_base];
             int k_max = rowstr[j_max];
-            int curr_max_row_str = rowstr[j_base + 1];
-            double suml = 0.0;
-            maa_const(k_max, k_end_reg);
+            float *curr_q = &q[j_base];
+            maa_const<int>(j_base, r4);
+            maa_const<int>(j_max, r5);
+            maa_const<int>(k_max, r3);
+            maa_const<int>(0, r6);
+            maa_const<int>(-1, r7);
+            // t2 = rowstr[j]
+            // t3 = rowstr[j + 1]
+            maa_stream_load<int>(rowstr, r4, r5, r1, t2);
+            maa_stream_load<int>(&rowstr[1], r4, r5, r1, t3);
+            // [t0 t1 t4 t5 t6 t7] available
             for (; k_base < k_max; k_base += TILE_SIZE) {
-                maa_const(k_base, k_start_reg);
-                maa_stream_load<int>(colidx, k_start_reg, k_end_reg, stride_reg, colidx_tile);
-                maa_indirect_load<double>(p, colidx_tile, pz_tile);
-                int curr_tilek_size = k_max - k_base < TILE_SIZE ? k_max - k_base : TILE_SIZE;
-                int k_curr = k_base;
-                wait_ready(pz_tile);
-                for (int i = 0; i < curr_tilek_size; i++) {
-                    if (k_curr == curr_max_row_str) {
-                        q[j_curr] = suml;
-                        // std::cout << "q[" << j_curr << "] = " << suml << std::endl;
-                        suml = 0.0;
-                        j_curr++;
-                        curr_max_row_str = rowstr[j_curr + 1];
-                    }
-                    // std::cout << "suml(" << suml << ") += a[" << k_curr << "](" << a[k_curr] << ") * p[colidx[" << k_curr << "](" << colidx[k_curr] << ")](" << pz_ptr[i] << " or " << p[colidx[k_curr]] << ")" << std::endl;
-                    suml += a[k_curr] * pz_ptr[i];
-                    k_curr++;
-                }
+                maa_const(k_base, r2);
+                // t0 = j
+                // t1 = k that is not needed
+                maa_range_loop<int>(r6, r7, t2, t3, r1, t0, t1);
+                // [t1 t4 t5 t6 t7] available
+
+                // t6 = colidx[k]
+                maa_stream_load<int>(colidx, r2, r3, r1, t6);
+                // [t1 t4 t5 t7] available
+
+                // t4 = p[colidx[k]]
+                // free t6
+                maa_indirect_load<float>(p, t6, t4);
+                // [t1 t5 t6 t7] available
+
+                // t5 = a[k]
+                maa_stream_load<float>(a, r2, r3, r1, t5);
+                // [t1 t6 t7] available
+
+                // t7 = a[k] * p[colidx[k]]
+                maa_alu_vector<float>(t4, t5, t7, Operation_t::MUL_OP);
+                // [t1 t6] available
+
+                // q[j] += t7
+                maa_indirect_rmw_vector(curr_q, t0, t7, Operation_t::ADD_OP);
+                wait_ready(t7);
             }
-            q[j_curr] = suml;
-            // std::cout << "q[" << j_curr << "] = " << suml << std::endl;
         }
 #pragma omp barrier
 
@@ -781,7 +825,7 @@ static void conj_grad_maa(int colidx[],
 		 * --------------------------------------------------------------------
 		 */
 
-        double d_tmp = 0.0;
+        float d_tmp = 0.0;
         for (j = 0; j < lastcol_firstcol_plus1_divisible_by_32; j += total_thread_iters) {
             d_tmp += my_p[j + 0] * my_q[j + 0];
             d_tmp += my_p[j + 1] * my_q[j + 1];
@@ -816,7 +860,7 @@ static void conj_grad_maa(int colidx[],
 		 * ---------------------------------------------------------------------
 		 */
 
-        double rho_tmp = 0.0;
+        float rho_tmp = 0.0;
         for (j = 0; j < lastcol_firstcol_plus1_divisible_by_32; j += total_thread_iters) {
             my_z[j + 0] += alpha * my_p[j + 0];
             my_z[j + 1] += alpha * my_p[j + 1];
@@ -896,74 +940,182 @@ static void conj_grad_maa(int colidx[],
     //         r[j] = suml;
     //     }
 
+    for (j = 0; j < naa_plus1_divisible_by_32; j += total_thread_iters) {
+        my_r[j + 0] = 0.0;
+        my_r[j + 1] = 0.0;
+        my_r[j + 2] = 0.0;
+        my_r[j + 3] = 0.0;
+        my_r[j + 4] = 0.0;
+        my_r[j + 5] = 0.0;
+        my_r[j + 6] = 0.0;
+        my_r[j + 7] = 0.0;
+    }
+#pragma omp for schedule(dynamic)
+    for (j = naa_plus1_divisible_by_32; j < naa_plus1; j++) {
+        r[j] = 0.0;
+    }
+
+    maa_const<int>(lastrow_firstrow_plus1_divisible_by_64K, r5);
 #pragma omp for nowait
     for (int j_base = 0; j_base < lastrow_firstrow_plus1_divisible_by_64K; j_base += TILE_SIZE) {
         int j_max = j_base + TILE_SIZE < lastrow_firstrow_plus1_divisible_by_64K ? j_base + TILE_SIZE : lastrow_firstrow_plus1_divisible_by_64K;
-        int j_curr = j_base;
         int k_base = rowstr[j_base];
         int k_max = rowstr[j_max];
-        int curr_max_row_str = rowstr[j_base + 1];
-        double suml = 0.0;
-        maa_const(k_max, k_end_reg);
+        float *curr_r = &r[j_base];
+        maa_const<int>(j_base, r4);
+        maa_const<int>(k_max, r3);
+        maa_const<int>(0, r6);
+        maa_const<int>(-1, r7);
+        // t2 = rowstr[j]
+        // t3 = rowstr[j + 1]
+        maa_stream_load<int>(rowstr, r4, r5, r1, t2);
+        maa_stream_load<int>(&rowstr[1], r4, r5, r1, t3);
+        // [t0 t1 t4 t5 t6 t7] available
         for (; k_base < k_max; k_base += TILE_SIZE) {
-            maa_const(k_base, k_start_reg);
-            maa_stream_load<int>(colidx, k_start_reg, k_end_reg, stride_reg, colidx_tile);
-            maa_indirect_load<double>(z, colidx_tile, pz_tile);
-            int curr_tilek_size = k_max - k_base < TILE_SIZE ? k_max - k_base : TILE_SIZE;
-            int k_curr = k_base;
-            wait_ready(pz_tile);
-            for (int i = 0; i < curr_tilek_size; i++) {
-                if (k_curr == curr_max_row_str) {
-                    r[j_curr] = suml;
-                    // std::cout << "r[" << j_curr << "] = " << suml << std::endl;
-                    suml = 0.0;
-                    j_curr++;
-                    curr_max_row_str = rowstr[j_curr + 1];
-                }
-                // std::cout << "suml(" << suml << ") += a[" << k_curr << "](" << a[k_curr] << ") * p[colidx[" << k_curr << "](" << colidx[k_curr] << ")](" << pz_ptr[i] << " or " << p[colidx[k_curr]] << ")" << std::endl;
-                suml += a[k_curr] * pz_ptr[i];
-                k_curr++;
-            }
+            maa_const(k_base, r2);
+            // t0 = j
+            // t1 = k that is not needed
+            maa_range_loop<int>(r6, r7, t2, t3, r1, t0, t1);
+            // [t1 t4 t5 t6 t7] available
+
+            // t6 = colidx[k]
+            maa_stream_load<int>(colidx, r2, r3, r1, t6);
+            // [t1 t4 t5 t7] available
+
+            // t4 = z[colidx[k]]
+            // free t6
+            maa_indirect_load<float>(z, t6, t4);
+            // [t1 t5 t6 t7] available
+
+            // t5 = a[k]
+            maa_stream_load<float>(a, r2, r3, r1, t5);
+            // [t1 t6 t7] available
+
+            // t7 = a[k] * z[colidx[k]]
+            maa_alu_vector<float>(t4, t5, t7, Operation_t::MUL_OP);
+            // [t1 t6] available
+
+            // r[j] += t7
+            maa_indirect_rmw_vector(curr_r, t0, t7, Operation_t::ADD_OP);
+            wait_ready(t7);
         }
-        r[j_curr] = suml;
-        // std::cout << "r[" << j_curr << "] = " << suml << std::endl;
     }
 
 #pragma omp for schedule(dynamic)
     for (int j_base = lastrow_firstrow_plus1_divisible_by_64K; j_base < lastrow_firstrow_plus1; j_base += tile_size) {
         int j_max = j_base + tile_size < lastrow_firstrow_plus1 ? j_base + tile_size : lastrow_firstrow_plus1;
-        int j_curr = j_base;
         int k_base = rowstr[j_base];
         int k_max = rowstr[j_max];
-        int curr_max_row_str = rowstr[j_base + 1];
-        double suml = 0.0;
-        maa_const(k_max, k_end_reg);
+        float *curr_r = &r[j_base];
+        maa_const<int>(j_base, r4);
+        maa_const<int>(j_max, r5);
+        maa_const<int>(k_max, r3);
+        maa_const<int>(0, r6);
+        maa_const<int>(-1, r7);
+        // t2 = rowstr[j]
+        // t3 = rowstr[j + 1]
+        maa_stream_load<int>(rowstr, r4, r5, r1, t2);
+        maa_stream_load<int>(&rowstr[1], r4, r5, r1, t3);
+        // [t0 t1 t4 t5 t6 t7] available
         for (; k_base < k_max; k_base += TILE_SIZE) {
-            maa_const(k_base, k_start_reg);
-            maa_stream_load<int>(colidx, k_start_reg, k_end_reg, stride_reg, colidx_tile);
-            maa_indirect_load<double>(z, colidx_tile, pz_tile);
-            int curr_tilek_size = k_max - k_base < TILE_SIZE ? k_max - k_base : TILE_SIZE;
-            int k_curr = k_base;
-            wait_ready(pz_tile);
-            for (int i = 0; i < curr_tilek_size; i++) {
-                if (k_curr == curr_max_row_str) {
-                    r[j_curr] = suml;
-                    // std::cout << "r[" << j_curr << "] = " << suml << std::endl;
-                    suml = 0.0;
-                    j_curr++;
-                    curr_max_row_str = rowstr[j_curr + 1];
-                }
-                // std::cout << "suml(" << suml << ") += a[" << k_curr << "](" << a[k_curr] << ") * p[colidx[" << k_curr << "](" << colidx[k_curr] << ")](" << pz_ptr[i] << " or " << p[colidx[k_curr]] << ")" << std::endl;
-                suml += a[k_curr] * pz_ptr[i];
-                k_curr++;
-            }
+            maa_const(k_base, r2);
+            // t0 = j
+            // t1 = k that is not needed
+            maa_range_loop<int>(r6, r7, t2, t3, r1, t0, t1);
+            // [t1 t4 t5 t6 t7] available
+
+            // t6 = colidx[k]
+            maa_stream_load<int>(colidx, r2, r3, r1, t6);
+            // [t1 t4 t5 t7] available
+
+            // t4 = z[colidx[k]]
+            // free t6
+            maa_indirect_load<float>(z, t6, t4);
+            // [t1 t5 t6 t7] available
+
+            // t5 = a[k]
+            maa_stream_load<float>(a, r2, r3, r1, t5);
+            // [t1 t6 t7] available
+
+            // t7 = a[k] * z[colidx[k]]
+            maa_alu_vector<float>(t4, t5, t7, Operation_t::MUL_OP);
+            // [t1 t6] available
+
+            // r[j] += t7
+            maa_indirect_rmw_vector(curr_r, t0, t7, Operation_t::ADD_OP);
+            wait_ready(t7);
         }
-        r[j_curr] = suml;
-        // std::cout << "r[" << j_curr << "] = " << suml << std::endl;
     }
 #pragma omp barrier
 
-    double sum_tmp = 0.0;
+    // #pragma omp for nowait
+    //     for (int j_base = 0; j_base < lastrow_firstrow_plus1_divisible_by_64K; j_base += TILE_SIZE) {
+    //         int j_max = j_base + TILE_SIZE < lastrow_firstrow_plus1_divisible_by_64K ? j_base + TILE_SIZE : lastrow_firstrow_plus1_divisible_by_64K;
+    //         int j_curr = j_base;
+    //         int k_base = rowstr[j_base];
+    //         int k_max = rowstr[j_max];
+    //         int curr_max_row_str = rowstr[j_base + 1];
+    //         float suml = 0.0;
+    //         maa_const(k_max, r3);
+    //         for (; k_base < k_max; k_base += TILE_SIZE) {
+    //             maa_const(k_base, r2);
+    //             maa_stream_load<int>(colidx, r2, r3, r1, t1);
+    //             maa_indirect_load<float>(z, t1, t0);
+    //             int curr_tilek_size = k_max - k_base < TILE_SIZE ? k_max - k_base : TILE_SIZE;
+    //             int k_curr = k_base;
+    //             wait_ready(t0);
+    //             for (int i = 0; i < curr_tilek_size; i++) {
+    //                 if (k_curr == curr_max_row_str) {
+    //                     r[j_curr] = suml;
+    //                     // std::cout << "r[" << j_curr << "] = " << suml << std::endl;
+    //                     suml = 0.0;
+    //                     j_curr++;
+    //                     curr_max_row_str = rowstr[j_curr + 1];
+    //                 }
+    //                 // std::cout << "suml(" << suml << ") += a[" << k_curr << "](" << a[k_curr] << ") * p[colidx[" << k_curr << "](" << colidx[k_curr] << ")](" << t0_ptr[i] << " or " << p[colidx[k_curr]] << ")" << std::endl;
+    //                 suml += a[k_curr] * t0_ptr[i];
+    //                 k_curr++;
+    //             }
+    //         }
+    //         r[j_curr] = suml;
+    //         // std::cout << "r[" << j_curr << "] = " << suml << std::endl;
+    //     }
+
+    // #pragma omp for schedule(dynamic)
+    //     for (int j_base = lastrow_firstrow_plus1_divisible_by_64K; j_base < lastrow_firstrow_plus1; j_base += tile_size) {
+    //         int j_max = j_base + tile_size < lastrow_firstrow_plus1 ? j_base + tile_size : lastrow_firstrow_plus1;
+    //         int j_curr = j_base;
+    //         int k_base = rowstr[j_base];
+    //         int k_max = rowstr[j_max];
+    //         int curr_max_row_str = rowstr[j_base + 1];
+    //         float suml = 0.0;
+    //         maa_const(k_max, r3);
+    //         for (; k_base < k_max; k_base += TILE_SIZE) {
+    //             maa_const(k_base, r2);
+    //             maa_stream_load<int>(colidx, r2, r3, r1, t1);
+    //             maa_indirect_load<float>(z, t1, t0);
+    //             int curr_tilek_size = k_max - k_base < TILE_SIZE ? k_max - k_base : TILE_SIZE;
+    //             int k_curr = k_base;
+    //             wait_ready(t0);
+    //             for (int i = 0; i < curr_tilek_size; i++) {
+    //                 if (k_curr == curr_max_row_str) {
+    //                     r[j_curr] = suml;
+    //                     // std::cout << "r[" << j_curr << "] = " << suml << std::endl;
+    //                     suml = 0.0;
+    //                     j_curr++;
+    //                     curr_max_row_str = rowstr[j_curr + 1];
+    //                 }
+    //                 // std::cout << "suml(" << suml << ") += a[" << k_curr << "](" << a[k_curr] << ") * p[colidx[" << k_curr << "](" << colidx[k_curr] << ")](" << t0_ptr[i] << " or " << p[colidx[k_curr]] << ")" << std::endl;
+    //                 suml += a[k_curr] * t0_ptr[i];
+    //                 k_curr++;
+    //             }
+    //         }
+    //         r[j_curr] = suml;
+    //         // std::cout << "r[" << j_curr << "] = " << suml << std::endl;
+    //     }
+    // #pragma omp barrier
+
+    float sum_tmp = 0.0;
     for (j = 0; j < lastcol_firstcol_plus1_divisible_by_32; j += total_thread_iters) {
         suml = x[j] - r[j];
         sum_tmp += suml * suml;
@@ -1012,17 +1164,17 @@ static void conj_grad_maa(int colidx[],
  */
 static void conj_grad_base(int colidx[],
                            int rowstr[],
-                           double x[],
-                           double z[],
-                           double a[],
-                           double p[],
-                           double q[],
-                           double r[],
+                           float x[],
+                           float z[],
+                           float a[],
+                           float p[],
+                           float q[],
+                           float r[],
                            double *rnorm) {
     int j, k;
     int cgit, cgitmax;
-    double alpha, beta, suml;
-    static double d, sum, rho, rho0;
+    float alpha, beta, suml;
+    static float d, sum, rho, rho0;
 
 #ifdef GEM5
 #pragma omp single
@@ -1241,7 +1393,7 @@ static int icnvrt(double x, int ipwr2) {
  * ---------------------------------------------------------------------
  */
 #ifndef USE_DATA_FROM_FILE
-static void makea(int n, int nz, double a[], int colidx[], int rowstr[], int firstrow, int lastrow, int firstcol, int lastcol, int arow[], int acol[][NONZER + 1], double aelt[][NONZER + 1], int iv[]) {
+static void makea(int n, int nz, float a[], int colidx[], int rowstr[], int firstrow, int lastrow, int firstcol, int lastcol, int arow[], int acol[][NONZER + 1], float aelt[][NONZER + 1], int iv[]) {
     int iouter, ivelt, nzv, nn1;
     int ivc[NONZER + 1];
     double vc[NONZER + 1];
@@ -1290,7 +1442,7 @@ static void makea(int n, int nz, double a[], int colidx[], int rowstr[], int fir
  * the rowstr pointers are defined for nrows = lastrow-firstrow+1 values
  * ---------------------------------------------------------------------
  */
-static void sparse(double a[], int colidx[], int rowstr[], int n, int nz, int nozer, int arow[], int acol[][NONZER + 1], double aelt[][NONZER + 1], int firstrow, int lastrow, int nzloc[], double rcond, double shift) {
+static void sparse(float a[], int colidx[], int rowstr[], int n, int nz, int nozer, int arow[], int acol[][NONZER + 1], float aelt[][NONZER + 1], int firstrow, int lastrow, int nzloc[], double rcond, double shift) {
     int nrows;
 
     /*
