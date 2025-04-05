@@ -6,7 +6,6 @@ GEM5_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = None
 CPT_DIR = None
 RSLT_DIR = None
-LOG_DIR = None
 BNCH_DIR = None
 
 all_modes = ["BASE", "MAA"]
@@ -36,8 +35,6 @@ def workerthread(my_tid):
     global lock
     global tasks
     task = None
-    my_log_addr = f"{LOG_DIR}/logs_T{my_tid}.txt"
-    os.system(f"rm {my_log_addr} 2>&1 > /dev/null; sleep 1;")
     while True:
         selected_task = None
         selected_task_id = None
@@ -49,15 +46,11 @@ def workerthread(my_tid):
                     tasks[task_id].started = True
                     break
         if selected_task == None:
-            with open (my_log_addr, "a") as f:
-                f.write("T[{}]: tasks finished, bye!\n".format(my_tid))
             print("T[{}]: tasks finished, bye!".format(my_tid))
             break
         else:
-            with open (my_log_addr, "a") as f:
-                f.write("T[{}]: executing a new task: {}\n".format(my_tid, selected_task.command))
             print("T[{}]: executing a new task: {}".format(my_tid, selected_task.command))
-            os.system(f"{selected_task.command} 2>&1 | tee -a {my_log_addr}")
+            os.system(selected_task.command)
             with lock:
                 tasks[selected_task_id].finished = True
 
@@ -232,7 +225,6 @@ def run_simulation(parallelism, force_rerun):
     print(f"\t\tData directory: {DATA_DIR}")
     print(f"\t\tCheckpoint directory: {CPT_DIR}")
     print(f"\t\tResult directory: {RSLT_DIR}")
-    print(f"\t\tLog directory: {LOG_DIR}")
     print(f"\t\tBenchmark directory: {BNCH_DIR}")
 
     ########################################## NAS ##########################################
@@ -352,11 +344,8 @@ def set_data_directory(path):
     global DATA_DIR
     global CPT_DIR
     global RSLT_DIR
-    global LOG_DIR
     global BNCH_DIR
     DATA_DIR = path
     CPT_DIR = f"{DATA_DIR}/checkpoints"
     RSLT_DIR = f"{DATA_DIR}/results"
-    LOG_DIR = f"{DATA_DIR}/logs"
     BNCH_DIR = f"{GEM5_DIR}/benchmarks"
-    os.system("mkdir -p " + LOG_DIR)
