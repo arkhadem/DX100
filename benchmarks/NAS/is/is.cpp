@@ -515,6 +515,50 @@ void rank_base(int iteration) {
     key_buff_ptr2 = key_array;
     key_buff_ptr = key_buff1;
 
+#ifdef GEM5
+    clear_mem_region();
+#if NUM_CORES == 4
+    add_mem_region(key_buff1_aptr[0], key_buff1_aptr[0] + MAX_KEY); // 6
+    add_mem_region(key_buff1_aptr[1], key_buff1_aptr[1] + MAX_KEY); // 7
+    add_mem_region(key_buff1_aptr[2], key_buff1_aptr[2] + MAX_KEY); // 8
+    add_mem_region(key_buff1_aptr[3], key_buff1_aptr[3] + MAX_KEY); // 9
+    add_mem_region(key_buff_ptr2, &key_buff_ptr2[NUM_KEYS]);        // 10
+// add_mem_region(key_buff_ptr, &key_buff_ptr[MAX_KEY]);            // key_buff1 = key_buff1_aptr[0]
+#elif NUM_CORES == 8
+    add_mem_region(key_buff1_aptr[0], key_buff1_aptr[0] + MAX_KEY); // 6
+    add_mem_region(key_buff1_aptr[1], key_buff1_aptr[1] + MAX_KEY); // 7
+    add_mem_region(key_buff1_aptr[2], key_buff1_aptr[2] + MAX_KEY); // 8
+    add_mem_region(key_buff1_aptr[3], key_buff1_aptr[3] + MAX_KEY); // 9
+    add_mem_region(key_buff1_aptr[4], key_buff1_aptr[4] + MAX_KEY); // 10
+    add_mem_region(key_buff1_aptr[5], key_buff1_aptr[5] + MAX_KEY); // 11
+    add_mem_region(key_buff1_aptr[6], key_buff1_aptr[6] + MAX_KEY); // 12
+    add_mem_region(key_buff1_aptr[7], key_buff1_aptr[7] + MAX_KEY); // 13
+    add_mem_region(key_buff_ptr2, &key_buff_ptr2[NUM_KEYS]);        // 14
+// add_mem_region(key_buff_ptr, &key_buff_ptr[MAX_KEY]);            // key_buff1 = key_buff1_aptr[0]
+#elif NUM_CORES == 16
+    add_mem_region(key_buff1_aptr[0], key_buff1_aptr[0] + MAX_KEY);   // 6
+    add_mem_region(key_buff1_aptr[1], key_buff1_aptr[1] + MAX_KEY);   // 7
+    add_mem_region(key_buff1_aptr[2], key_buff1_aptr[2] + MAX_KEY);   // 8
+    add_mem_region(key_buff1_aptr[3], key_buff1_aptr[3] + MAX_KEY);   // 9
+    add_mem_region(key_buff1_aptr[4], key_buff1_aptr[4] + MAX_KEY);   // 10
+    add_mem_region(key_buff1_aptr[5], key_buff1_aptr[5] + MAX_KEY);   // 11
+    add_mem_region(key_buff1_aptr[6], key_buff1_aptr[6] + MAX_KEY);   // 12
+    add_mem_region(key_buff1_aptr[7], key_buff1_aptr[7] + MAX_KEY);   // 13
+    add_mem_region(key_buff1_aptr[8], key_buff1_aptr[8] + MAX_KEY);   // 14
+    add_mem_region(key_buff1_aptr[9], key_buff1_aptr[9] + MAX_KEY);   // 15
+    add_mem_region(key_buff1_aptr[10], key_buff1_aptr[10] + MAX_KEY); // 16
+    add_mem_region(key_buff1_aptr[11], key_buff1_aptr[11] + MAX_KEY); // 17
+    add_mem_region(key_buff1_aptr[12], key_buff1_aptr[12] + MAX_KEY); // 18
+    add_mem_region(key_buff1_aptr[13], key_buff1_aptr[13] + MAX_KEY); // 19
+    add_mem_region(key_buff1_aptr[14], key_buff1_aptr[14] + MAX_KEY); // 20
+    add_mem_region(key_buff1_aptr[15], key_buff1_aptr[15] + MAX_KEY); // 21
+    add_mem_region(key_buff_ptr2, &key_buff_ptr2[NUM_KEYS]);          // 22
+// add_mem_region(key_buff_ptr, &key_buff_ptr[MAX_KEY]);              // key_buff1 = key_buff1_aptr[0]
+#else
+#error "Invalid number of cores"
+#endif
+#endif
+
 #pragma omp parallel private(i, k)
     {
         INT_TYPE *work_buff;
@@ -526,16 +570,6 @@ void rank_base(int iteration) {
 #endif
 
         work_buff = key_buff1_aptr[myid];
-
-#ifdef GEM5
-#pragma omp master
-        {
-            clear_mem_region();
-            add_mem_region(work_buff, &work_buff[MAX_KEY]);          // 6
-            add_mem_region(key_buff_ptr, &key_buff_ptr[MAX_KEY]);    // 7
-            add_mem_region(key_buff_ptr2, &key_buff_ptr2[NUM_KEYS]); // 8
-        }
-#endif
 
         /*  Clear the work array */
         for (i = 0; i < MAX_KEY; i++)

@@ -9,9 +9,8 @@ SUITE = is
 
 # Targets for baseline binaries
 BASELINE_BINARIES = $(SUITE)_base
-# BASELINE_BINARIES += $(SUITE)_base_4C
-# BASELINE_BINARIES += $(SUITE)_base_8C
-# BASELINE_BINARIES += $(SUITE)_base_16C
+BASELINE_BINARIES += $(SUITE)_base_4C
+BASELINE_BINARIES += $(SUITE)_base_8C
 MAA_BINARIES = 
 
 ifdef DUMP
@@ -19,15 +18,14 @@ ifdef DUMP
 else
 	CXX_FLAGS += -DUSE_DATA_FROM_FILE
 	MAA_BINARIES += $(SUITE)_maa
-# MAA_BINARIES += $(SUITE)_maa_1K
-# MAA_BINARIES += $(SUITE)_maa_2K
-# MAA_BINARIES += $(SUITE)_maa_4K
-# MAA_BINARIES += $(SUITE)_maa_8K
-# MAA_BINARIES += $(SUITE)_maa_16K
-# MAA_BINARIES += $(SUITE)_maa_32K
-# MAA_BINARIES += $(SUITE)_maa_4C
-# MAA_BINARIES += $(SUITE)_maa_8C
-# MAA_BINARIES += $(SUITE)_maa_16C
+	MAA_BINARIES += $(SUITE)_maa_1K
+	MAA_BINARIES += $(SUITE)_maa_2K
+	MAA_BINARIES += $(SUITE)_maa_4K
+	MAA_BINARIES += $(SUITE)_maa_8K
+	MAA_BINARIES += $(SUITE)_maa_16K
+	MAA_BINARIES += $(SUITE)_maa_32K
+	MAA_BINARIES += $(SUITE)_maa_4C
+	MAA_BINARIES += $(SUITE)_maa_8C
 endif
 
 .PHONY: all
@@ -50,9 +48,6 @@ GEM5: m5op.o all
 
 %_base_8C: $(SUITE).cpp m5op.o
 	$(CXX) $(MAA_INCLUDE) $(GEM5_INCLUDE) $(CXX_FLAGS) -DNUM_CORES=8 $(GEM5_LIB) m5op.o $< -o $@
-
-%_base_16C: $(SUITE).cpp m5op.o
-	$(CXX) $(MAA_INCLUDE) $(GEM5_INCLUDE) $(CXX_FLAGS) -DNUM_CORES=16 $(GEM5_LIB) m5op.o $< -o $@
 
 # Rule for building MAA binaries
 %_maa: $(SUITE).cpp m5op.o
@@ -81,9 +76,6 @@ GEM5: m5op.o all
 
 %_maa_8C: $(SUITE).cpp m5op.o
 	$(CXX) $(MAA_INCLUDE) $(GEM5_INCLUDE) $(CXX_FLAGS) -DMAA -DNUM_CORES=8 -DTILE_SIZE=16384 $(GEM5_LIB) m5op.o $< -o $@
-
-%_maa_16C: $(SUITE).cpp m5op.o
-	$(CXX) $(MAA_INCLUDE) $(GEM5_INCLUDE) $(CXX_FLAGS) -DMAA -DNUM_CORES=16 -DTILE_SIZE=16384 $(GEM5_LIB) m5op.o $< -o $@
 
 # m5op.o is not directly used here, but including it if needed
 m5op.o: $(GEM5_HOME)/util/m5/build/x86/abi/x86/m5op.S

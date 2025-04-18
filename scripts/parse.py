@@ -148,6 +148,71 @@ all_cache_stats = {"Avg-SPD-Latency": {"PRE": "system.switch_cpus", "POST": ".ls
                    "L3-11-Misses": {"PRE": "system.l3.demandMisses_11::switch_cpus", "POST": ".data"},
                    "M3-11-Hits": {"PRE": "system.l3.demandMshrHits_11::switch_cpus", "POST": ".data"},
                    "M3-11-Misses": {"PRE": "system.l3.demandMshrMisses_11::switch_cpus", "POST": ".data"},
+                   "Avg-12-Latency": {"PRE": "system.switch_cpus", "POST": ".lsq0.loadToUse_12::mean"},
+                   "L1-12-Hits": {"PRE": "dcache.demandHits_12::switch_cpus", "POST": ".data"},
+                   "L1-12-Misses": {"PRE": "dcache.demandMisses_12::switch_cpus", "POST": ".data"},
+                   "M1-12-Hits": {"PRE": "dcache.demandMshrHits_12::switch_cpus", "POST": ".data"},
+                   "M1-12-Misses": {"PRE": "dcache.demandMshrMisses_12::switch_cpus", "POST": ".data"},
+                   "L2-12-Hits": {"PRE": "l2cache.demandHits_12::switch_cpus", "POST": ".data"},
+                   "L2-12-Misses": {"PRE": "l2cache.demandMisses_12::switch_cpus", "POST": ".data"},
+                   "M2-12-Hits": {"PRE": "l2cache.demandMshrHits_12::switch_cpus", "POST": ".data"},
+                   "M2-12-Misses": {"PRE": "l2cache.demandMshrMisses_12::switch_cpus", "POST": ".data"},
+                   "L3-12-Hits": {"PRE": "system.l3.demandHits_12::switch_cpus", "POST": ".data"},
+                   "L3-12-Misses": {"PRE": "system.l3.demandMisses_12::switch_cpus", "POST": ".data"},
+                   "M3-12-Hits": {"PRE": "system.l3.demandMshrHits_12::switch_cpus", "POST": ".data"},
+                   "M3-12-Misses": {"PRE": "system.l3.demandMshrMisses_12::switch_cpus", "POST": ".data"},
+                   "Avg-13-Latency": {"PRE": "system.switch_cpus", "POST": ".lsq0.loadToUse_13::mean"},
+                   "L1-13-Hits": {"PRE": "dcache.demandHits_13::switch_cpus", "POST": ".data"},
+                   "L1-13-Misses": {"PRE": "dcache.demandMisses_13::switch_cpus", "POST": ".data"},
+                   "M1-13-Hits": {"PRE": "dcache.demandMshrHits_13::switch_cpus", "POST": ".data"},
+                   "M1-13-Misses": {"PRE": "dcache.demandMshrMisses_13::switch_cpus", "POST": ".data"},
+                   "L2-13-Hits": {"PRE": "l2cache.demandHits_13::switch_cpus", "POST": ".data"},
+                   "L2-13-Misses": {"PRE": "l2cache.demandMisses_13::switch_cpus", "POST": ".data"},
+                   "M2-13-Hits": {"PRE": "l2cache.demandMshrHits_13::switch_cpus", "POST": ".data"},
+                   "M2-13-Misses": {"PRE": "l2cache.demandMshrMisses_13::switch_cpus", "POST": ".data"},
+                   "L3-13-Hits": {"PRE": "system.l3.demandHits_13::switch_cpus", "POST": ".data"},
+                   "L3-13-Misses": {"PRE": "system.l3.demandMisses_13::switch_cpus", "POST": ".data"},
+                   "M3-13-Hits": {"PRE": "system.l3.demandMshrHits_13::switch_cpus", "POST": ".data"},
+                   "M3-13-Misses": {"PRE": "system.l3.demandMshrMisses_13::switch_cpus", "POST": ".data"},
+                   "Avg-14-Latency": {"PRE": "system.switch_cpus", "POST": ".lsq0.loadToUse_14::mean"},
+                   "L1-14-Hits": {"PRE": "dcache.demandHits_14::switch_cpus", "POST": ".data"},
+                   "L1-14-Misses": {"PRE": "dcache.demandMisses_14::switch_cpus", "POST": ".data"},
+                   "M1-14-Hits": {"PRE": "dcache.demandMshrHits_14::switch_cpus", "POST": ".data"},
+                   "M1-14-Misses": {"PRE": "dcache.demandMshrMisses_14::switch_cpus", "POST": ".data"},
+                   "L2-14-Hits": {"PRE": "l2cache.demandHits_14::switch_cpus", "POST": ".data"},
+                   "L2-14-Misses": {"PRE": "l2cache.demandMisses_14::switch_cpus", "POST": ".data"},
+                   "M2-14-Hits": {"PRE": "l2cache.demandMshrHits_14::switch_cpus", "POST": ".data"},
+                   "M2-14-Misses": {"PRE": "l2cache.demandMshrMisses_14::switch_cpus", "POST": ".data"},
+                   "L3-14-Hits": {"PRE": "system.l3.demandHits_14::switch_cpus", "POST": ".data"},
+                   "L3-14-Misses": {"PRE": "system.l3.demandMisses_14::switch_cpus", "POST": ".data"},
+                   "M3-14-Hits": {"PRE": "system.l3.demandMshrHits_14::switch_cpus", "POST": ".data"},
+                   "M3-14-Misses": {"PRE": "system.l3.demandMshrMisses_14::switch_cpus", "POST": ".data"},
+                   "Avg-15-Latency": {"PRE": "system.switch_cpus", "POST": ".lsq0.loadToUse_15::mean"},
+                   "L1-15-Hits": {"PRE": "dcache.demandHits_15::switch_cpus", "POST": ".data"},
+                   "L1-15-Misses": {"PRE": "dcache.demandMisses_15::switch_cpus", "POST": ".data"},
+                   "M1-15-Hits": {"PRE": "dcache.demandMshrHits_15::switch_cpus", "POST": ".data"},
+                   "M1-15-Misses": {"PRE": "dcache.demandMshrMisses_15::switch_cpus", "POST": ".data"},
+                   "L2-15-Hits": {"PRE": "l2cache.demandHits_15::switch_cpus", "POST": ".data"},
+                   "L2-15-Misses": {"PRE": "l2cache.demandMisses_15::switch_cpus", "POST": ".data"},
+                   "M2-15-Hits": {"PRE": "l2cache.demandMshrHits_15::switch_cpus", "POST": ".data"},
+                   "M2-15-Misses": {"PRE": "l2cache.demandMshrMisses_15::switch_cpus", "POST": ".data"},
+                   "L3-15-Hits": {"PRE": "system.l3.demandHits_15::switch_cpus", "POST": ".data"},
+                   "L3-15-Misses": {"PRE": "system.l3.demandMisses_15::switch_cpus", "POST": ".data"},
+                   "M3-15-Hits": {"PRE": "system.l3.demandMshrHits_15::switch_cpus", "POST": ".data"},
+                   "M3-15-Misses": {"PRE": "system.l3.demandMshrMisses_15::switch_cpus", "POST": ".data"},
+                   "Avg-16-Latency": {"PRE": "system.switch_cpus", "POST": ".lsq0.loadToUse_16::mean"},
+                   "L1-16-Hits": {"PRE": "dcache.demandHits_16::switch_cpus", "POST": ".data"},
+                   "L1-16-Misses": {"PRE": "dcache.demandMisses_16::switch_cpus", "POST": ".data"},
+                   "M1-16-Hits": {"PRE": "dcache.demandMshrHits_16::switch_cpus", "POST": ".data"},
+                   "M1-16-Misses": {"PRE": "dcache.demandMshrMisses_16::switch_cpus", "POST": ".data"},
+                   "L2-16-Hits": {"PRE": "l2cache.demandHits_16::switch_cpus", "POST": ".data"},
+                   "L2-16-Misses": {"PRE": "l2cache.demandMisses_16::switch_cpus", "POST": ".data"},
+                   "M2-16-Hits": {"PRE": "l2cache.demandMshrHits_16::switch_cpus", "POST": ".data"},
+                   "M2-16-Misses": {"PRE": "l2cache.demandMshrMisses_16::switch_cpus", "POST": ".data"},
+                   "L3-16-Hits": {"PRE": "system.l3.demandHits_16::switch_cpus", "POST": ".data"},
+                   "L3-16-Misses": {"PRE": "system.l3.demandMisses_16::switch_cpus", "POST": ".data"},
+                   "M3-16-Hits": {"PRE": "system.l3.demandMshrHits_16::switch_cpus", "POST": ".data"},
+                   "M3-16-Misses": {"PRE": "system.l3.demandMshrMisses_16::switch_cpus", "POST": ".data"},
                    "Avg-T-Latency": {"PRE": "system.switch_cpus", "POST": ".lsq0.loadToUse_T::mean"},
                    "L1-T-Hits": {"PRE": "dcache.demandHits_T::switch_cpus", "POST": ".data"},
                    "L1-T-Misses": {"PRE": "dcache.demandMisses_T::switch_cpus", "POST": ".data"},
@@ -255,8 +320,8 @@ def parse_gem5_stats(stats, mode, target_stats):
                         if f"system.maa.I0_IND_Cycles{maa_indirect_cycle}" == words[0]:
                             maa_indirect_cycles[maa_indirect_cycle] = int(words[1])
                             break
-    # else:
-    #     print(f"File not found: {stats}")
+    else:
+        print(f"File not found: {stats}")
 
     return cycles, maa_cycles, maa_indirect_cycles, cache_stats, instruction_types
 
@@ -498,7 +563,7 @@ def parse_header():
     res += "DRAM-RD,DRAM-WR,DRAM-ACT,DRAM-RD-BW,DRAM-WR-BW,DRAM-total-BW,DRAM-RB-hitrate,DRAM-CTRL-occ,DRAM-PRE-STB-energy,DRAM-ACT-STB-energy,DRAM-ACTPRE-energy,DRAM-RD-energy,DRAM-WR-energy,DRAM-DQ-energy,DRAM-Total-energy,CORE-ST-Power,CORE-DY-Power,CORE-Power,LLC-ST-Power,LLC-DY-Power,LLC-Power,CORE-ST-Energy,CORE-DY-Energy,CORE-Energy,LLC-ST-Energy,LLC-DY-Energy,LLC-Energy,"
     return res
 
-def read_results(line, num_channels):
+def read_results(line, num_channels, offset):
     words = line.split(",")
     kernel = words[0]
     mode = words[1]
@@ -511,7 +576,6 @@ def read_results(line, num_channels):
     DRAM_RB_hitrate = None
     DRAM_CTRL_occ = None
 
-    offset = 3
     metrics = parse_header().split(",")
     for metric in metrics:
         if metric == "cycles":
@@ -547,9 +611,16 @@ def plot_results(results_path, result_dir, num_channels):
     results = {}
     kernels = []
     with open(results_path, "r") as f:
-        result_lines = f.readlines()[1:]
+        offset = 0
+        result_lines = f.readlines()
+        metrics = result_lines[0].split(",")
+        for metric in metrics:
+            if metric == "cycles":
+                break
+            offset += 1
+        result_lines = result_lines[1:]
         for line in result_lines:
-            kernel, mode, cycle, DRAM_BW_util, DRAM_RB_hitrate, DRAM_CTRL_occ, total_instrs, L1_MPKI, L2_MPKI, L3_MPKI = read_results(line, num_channels)
+            kernel, mode, cycle, DRAM_BW_util, DRAM_RB_hitrate, DRAM_CTRL_occ, total_instrs, L1_MPKI, L2_MPKI, L3_MPKI = read_results(line, num_channels, offset)
             if kernel not in results.keys():
                 results[kernel] = {}
             assert mode not in results[kernel].keys()
@@ -695,7 +766,203 @@ def plot_results(results_path, result_dir, num_channels):
     plt.savefig(f"{result_dir}/MPKI.png")
     plt.close()
 
+def plot_results_DMP(results_path, result_dir, num_channels):
+    results = {}
+    kernels = []
+    with open(results_path, "r") as f:
+        offset = 0
+        result_lines = f.readlines()
+        metrics = result_lines[0].split(",")
+        for metric in metrics:
+            if metric == "cycles":
+                break
+            offset += 1
+        result_lines = result_lines[1:]
+        for line in result_lines:
+            kernel, mode, cycle, DRAM_BW_util, DRAM_RB_hitrate, DRAM_CTRL_occ, total_instrs, L1_MPKI, L2_MPKI, L3_MPKI = read_results(line, num_channels, offset)
+            if kernel not in results.keys():
+                results[kernel] = {}
+            assert mode not in results[kernel].keys()
+            results[kernel][mode] = {"cycle": cycle, "DRAM_BW_util": DRAM_BW_util}
+            if kernel not in kernels:
+                kernels.append(kernel)
 
+    speed_ups = []
+    for kernel in kernels:
+        dmp_cycle = results[kernel]["DMP"]["cycle"]
+        maa_cycle = results[kernel]["MAA"]["cycle"]
+        if dmp_cycle == 0 or maa_cycle == 0:
+            speed_ups.append(0)
+        else:
+            speed_up = dmp_cycle / maa_cycle
+            speed_ups.append(speed_up)
+    plt.figure()
+    plt.bar(kernels + ["GMEAN"], speed_ups + [statistics.geometric_mean([su for su in speed_ups if su != 0])], color="#75A550", edgecolor='black')
+    plt.xticks(rotation='vertical')
+    plt.xlabel("Kernels")
+    plt.ylabel("Speedup (x)")
+    plt.ylim(0, 3)
+    plt.yticks(range(0, 4, 1))
+    plt.title("DX100 speedup compared to DMP")
+    plt.tight_layout()
+    plt.savefig(f"{result_dir}/DMP_speedup.png")
+    plt.close()
+
+    DMP_DRAM_BW_util = [x["DRAM_BW_util"] for x in [results[kernel]["DMP"] for kernel in kernels]]
+    DMP_DRAM_BW_util += [statistics.mean([bw for bw in DMP_DRAM_BW_util if bw != 0])]
+    MAA_DRAM_BW_util = [x["DRAM_BW_util"] for x in [results[kernel]["MAA"] for kernel in kernels]]
+    MAA_DRAM_BW_util += [statistics.mean([bw for bw in MAA_DRAM_BW_util if bw != 0])]
+    x = list(range(len(kernels + ["Average"])))
+    bar_width = 0.4
+    plt.figure()
+    plt.bar([i - bar_width/2 for i in x], DMP_DRAM_BW_util, width=bar_width, color="#B01517", label='DMP', edgecolor='black')
+    plt.bar([i + bar_width/2 for i in x], MAA_DRAM_BW_util, width=bar_width, color="#1C689E", label='DX100', edgecolor='black')
+    plt.xticks(x, kernels + ["Average"], rotation='vertical')
+    plt.xlabel("Kernels")
+    plt.ylabel("Bandwidth Utilization (%)")
+    plt.ylim(0, 100)
+    plt.yticks(range(0, 101, 20))
+    plt.title("Bandwidth utilization")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"{result_dir}/DMP_bandwidth.png")
+    plt.close()
+
+def plot_results_TS(results_path, result_dir, num_channels):
+    results = {}
+    kernels = []
+    all_TS = []
+    all_colors = ["#FFFFB3", "#BEBBDA", "#FB7F72", "#80B1D3", "#75A550", "#FEB362"]
+    with open(results_path, "r") as f:
+        offset = 0
+        result_lines = f.readlines()
+        metrics = result_lines[0].split(",")
+        for metric in metrics:
+            if metric == "cycles":
+                break
+            offset += 1
+        result_lines = result_lines[1:]
+        for line in result_lines:
+            kernel, mode, cycle, DRAM_BW_util, DRAM_RB_hitrate, DRAM_CTRL_occ, total_instrs, L1_MPKI, L2_MPKI, L3_MPKI = read_results(line, num_channels, offset)
+            if kernel not in results.keys():
+                results[kernel] = {}
+            if "MAA" in mode:
+                mode = mode.split("/")[1]
+                if mode not in all_TS:
+                    all_TS.append(mode)
+            assert mode not in results[kernel].keys()
+            results[kernel][mode] = {"cycle": cycle}
+            if kernel not in kernels:
+                kernels.append(kernel)
+    assert len(all_TS) == len(all_colors), f"Number of TS {len(all_TS)} != Number of colors {len(all_colors)}"
+    speed_ups = []
+    for ts in all_TS:
+        speed_ups.append([])
+    for kernel in kernels:
+        for ts_id, ts in enumerate(all_TS):
+            base_cycle = results[kernel]["BASE"]["cycle"]
+            maa_cycle = results[kernel][ts]["cycle"]
+            if base_cycle == 0 or maa_cycle == 0:
+                speed_ups[ts_id].append(0)
+            else:
+                speed_up = base_cycle / maa_cycle
+                speed_ups[ts_id].append(speed_up)
+    for ts_id in range(len(all_TS)):
+        speed_ups[ts_id].append(statistics.geometric_mean([su for su in speed_ups[ts_id] if su != 0]))
+    x = list(range(len(kernels + ["GMEAN"])))
+    bar_width = 0.80 / len(all_TS)
+    plt.figure()
+    location = bar_width * (-1.00 * len(all_TS) / 2.00 + 0.50)
+    for ts_id in range(len(all_TS)):
+        plt.bar([i + location for i in x], speed_ups[ts_id], width=bar_width, color=all_colors[ts_id], label=all_TS[ts_id], edgecolor='black')
+        location += bar_width
+    plt.xticks(x, kernels + ["GMEAN"], rotation='vertical')
+    plt.xlabel("Kernels")
+    plt.ylabel("Speedup (x)")
+    plt.ylim(0, 4)
+    plt.yticks(range(0, 5, 1))
+    plt.title("Performance sensitivity to the tile size")
+    plt.legend(loc='lower center', bbox_to_anchor=(0.5, 1.05), ncol=len(all_TS), frameon=False)
+    plt.subplots_adjust(top=0.85)
+    plt.tight_layout()
+    plt.savefig(f"{result_dir}/TS_speedup.png", bbox_inches='tight')
+    plt.close()
+
+def plot_results_SC(results_path, result_dir, num_channels_4_core, num_channels_8_core):
+    results = {}
+    kernels = []
+    with open(results_path, "r") as f:
+        offset = 0
+        result_lines = f.readlines()
+        metrics = result_lines[0].split(",")
+        num_cores_offset = 0
+        num_MAAs_offset = 0
+        for metric in metrics:
+            if metric == "cores":
+                num_cores_offset = offset
+            elif metric == "DX100s":
+                num_MAAs_offset = offset
+            elif metric == "cycles":
+                break
+            offset += 1
+        result_lines = result_lines[1:]
+        for line in result_lines:
+            num_cores = line.split(",")[num_cores_offset]
+            num_channels = num_channels_4_core if num_cores == "4" else num_channels_8_core
+            kernel, mode, cycle, DRAM_BW_util, DRAM_RB_hitrate, DRAM_CTRL_occ, total_instrs, L1_MPKI, L2_MPKI, L3_MPKI = read_results(line, num_channels, offset)
+            if kernel not in results.keys():
+                results[kernel] = {}
+            num_MAAs = line.split(",")[num_MAAs_offset]
+            if num_cores not in results[kernel].keys():
+                results[kernel][num_cores] = {}
+            assert num_MAAs not in results[kernel][num_cores].keys()
+            results[kernel][num_cores][num_MAAs] = {"cycle": cycle}
+            if kernel not in kernels:
+                kernels.append(kernel)
+    speed_ups_4_1 = []
+    speed_ups_8_1 = []
+    speed_ups_8_2 = []
+    for kernel in kernels:
+        base_4_cycle = results[kernel]["4"]["0"]["cycle"]
+        maa_4_1_cycle = results[kernel]["4"]["1"]["cycle"]
+        base_8_cycle = results[kernel]["8"]["0"]["cycle"]
+        maa_8_1_cycle = results[kernel]["8"]["1"]["cycle"]
+        maa_8_2_cycle = results[kernel]["8"]["2"]["cycle"]
+        if base_4_cycle == 0 or maa_4_1_cycle == 0:
+            speed_ups_4_1.append(0)
+        else:
+            speed_up = base_4_cycle / maa_4_1_cycle
+            speed_ups_4_1.append(speed_up)
+        if base_8_cycle == 0 or maa_8_1_cycle == 0:
+            speed_ups_8_1.append(0)
+        else:
+            speed_up = base_8_cycle / maa_8_1_cycle
+            speed_ups_8_1.append(speed_up)
+        if base_8_cycle == 0 or maa_8_2_cycle == 0:
+            speed_ups_8_2.append(0)
+        else:
+            speed_up = base_8_cycle / maa_8_2_cycle
+            speed_ups_8_2.append(speed_up)
+    speed_ups_4_1.append(statistics.geometric_mean([su for su in speed_ups_4_1 if su != 0]))
+    speed_ups_8_1.append(statistics.geometric_mean([su for su in speed_ups_8_1 if su != 0]))
+    speed_ups_8_2.append(statistics.geometric_mean([su for su in speed_ups_8_2 if su != 0]))
+    x = list(range(len(kernels + ["GMEAN"])))
+    bar_width = 0.3
+    plt.figure()
+    plt.bar([i - bar_width for i in x], speed_ups_4_1, width=bar_width, color="#73A54F", label="4 Cores (10MB LLC) vs. 4 Cores (8MB LLC) + 1 DX100 (2MB SPD)", edgecolor='black')
+    plt.bar([i for i in x], speed_ups_8_1, width=bar_width, color="#FB7F72", label="8 Cores (20MB LLC) vs. 8 Cores (16MB LLC) + 1 DX100 (4MB SPD)", edgecolor='black')
+    plt.bar([i + bar_width for i in x], speed_ups_8_2, width=bar_width, color="#80B1D3", label="8 Cores (20MB LLC) vs. 8 Cores (16MB LLC) + 2 DX100 (2 2MB SPD)", edgecolor='black')
+    plt.xticks(x, kernels + ["GMEAN"], rotation='vertical')
+    plt.xlabel("Kernels")
+    plt.ylabel("Speedup (x)")
+    plt.ylim(0, 4)
+    plt.yticks(range(0, 5, 1))
+    plt.title("Performance improvement scalability")
+    plt.legend(loc='upper left', bbox_to_anchor=(0.0, -0.25), frameon=False, ncol=1, alignment='left')
+    plt.subplots_adjust(bottom=0.35)
+    plt.tight_layout()
+    plt.savefig(f"{result_dir}/SC_speedup.png", bbox_inches='tight')
+    plt.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Parse gem5.')

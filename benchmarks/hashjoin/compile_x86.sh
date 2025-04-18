@@ -23,5 +23,13 @@ if [ $# -ge 2 ]; then
     MACROS="$MACROS -D$2"
 fi
 g++ -O0 -g3 npj2epb.c -c  -std=c++11 $MACROS
-g++ -O0 -g3 $MACROS $EXTRA_FILE npj2epb.o main.c generator.c genzipf.c perf_counters.c cpu_mapping.c parallel_radix_join.cpp -lpthread -fopenmp -lm  -o bin/x86/hj_maa -DMAA -std=c++11 -DTILE_SIZE=16384
+g++ -O0 -g3 $MACROS $EXTRA_FILE npj2epb.o main.c generator.c genzipf.c perf_counters.c cpu_mapping.c parallel_radix_join.cpp -lpthread -fopenmp -lm  -o bin/x86/hj_maa -DMAA -std=c++11 -DNUM_CORES=4 -DTILE_SIZE=16384
+g++ -O0 -g3 $MACROS $EXTRA_FILE npj2epb.o main.c generator.c genzipf.c perf_counters.c cpu_mapping.c parallel_radix_join.cpp -lpthread -fopenmp -lm  -o bin/x86/hj_maa_32K -DMAA -std=c++11 -DNUM_CORES=4 -DTILE_SIZE=32768
+g++ -O0 -g3 $MACROS $EXTRA_FILE npj2epb.o main.c generator.c genzipf.c perf_counters.c cpu_mapping.c parallel_radix_join.cpp -lpthread -fopenmp -lm  -o bin/x86/hj_maa_16K -DMAA -std=c++11 -DNUM_CORES=4 -DTILE_SIZE=16384
+g++ -O0 -g3 $MACROS $EXTRA_FILE npj2epb.o main.c generator.c genzipf.c perf_counters.c cpu_mapping.c parallel_radix_join.cpp -lpthread -fopenmp -lm  -o bin/x86/hj_maa_8K -DMAA -std=c++11 -DNUM_CORES=4 -DTILE_SIZE=8192
+g++ -O0 -g3 $MACROS $EXTRA_FILE npj2epb.o main.c generator.c genzipf.c perf_counters.c cpu_mapping.c parallel_radix_join.cpp -lpthread -fopenmp -lm  -o bin/x86/hj_maa_4K -DMAA -std=c++11 -DNUM_CORES=4 -DTILE_SIZE=4096
+g++ -O0 -g3 $MACROS $EXTRA_FILE npj2epb.o main.c generator.c genzipf.c perf_counters.c cpu_mapping.c parallel_radix_join.cpp -lpthread -fopenmp -lm  -o bin/x86/hj_maa_2K -DMAA -std=c++11 -DNUM_CORES=4 -DTILE_SIZE=2048
+g++ -O0 -g3 $MACROS $EXTRA_FILE npj2epb.o main.c generator.c genzipf.c perf_counters.c cpu_mapping.c parallel_radix_join.cpp -lpthread -fopenmp -lm  -o bin/x86/hj_maa_1K -DMAA -std=c++11 -DNUM_CORES=4 -DTILE_SIZE=1024
+g++ -O0 -g3 $MACROS $EXTRA_FILE npj2epb.o main.c generator.c genzipf.c perf_counters.c cpu_mapping.c parallel_radix_join.cpp -lpthread -fopenmp -lm  -o bin/x86/hj_maa_4C -DMAA -std=c++11 -DNUM_CORES=4 -DTILE_SIZE=16384
+g++ -O0 -g3 $MACROS $EXTRA_FILE npj2epb.o main.c generator.c genzipf.c perf_counters.c cpu_mapping.c parallel_radix_join.cpp -lpthread -fopenmp -lm  -o bin/x86/hj_maa_8C -DMAA -std=c++11 -DNUM_CORES=8 -DTILE_SIZE=16384
 g++ -O0 -g3 $MACROS $EXTRA_FILE npj2epb.o main.c generator.c genzipf.c perf_counters.c cpu_mapping.c parallel_radix_join.cpp -lpthread -fopenmp -lm  -o bin/x86/hj_base -DCPU -std=c++11
