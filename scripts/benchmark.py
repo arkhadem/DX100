@@ -1,5 +1,5 @@
 import argparse
-from sim import run_simulation, run_simulation_DMP, run_simulation_TS, run_simulation_SC, set_data_directory
+from sim import run_simulation, run_simulation_DMP, run_simulation_TS, run_simulation_SC, set_data_directory, run_tasks
 from parse import parse_results, parse_header, plot_results, plot_results_DMP, plot_results_TS, plot_results_SC
 import os
 
@@ -28,6 +28,8 @@ if args.a == 'simulate' or args.a == 'all':
         run_simulation_TS(args.j, args.f)
     if args.b == 'SC' or args.b == 'all':
         run_simulation_SC(args.j, args.f)
+    ########################################## RUN SELECTED EXPERIMENTS ##########################################
+    run_tasks(args.j)
 
 if args.a == 'parse' or args.a == 'all':
     print(f'Processing results')

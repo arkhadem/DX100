@@ -31,16 +31,19 @@ tasks = []
 lock = Lock()
 
 class Task:
-    def __init__(self, command, dependency = None):
+    def __init__(self, command, directory, dependency = None):
         self.command = command
         self.started = False
         self.finished = False
         self.dependency = dependency
+        if directory[-1] == "/":
+            directory = directory[:-1]
+        self.directory = directory
     
     def __eq__(self, value):
         if value == None or self == None:
             return False
-        return self.command == value.command
+        return self.directory == value.directory
 
 def workerthread(my_tid):
     global lock
@@ -113,10 +116,13 @@ def add_command_checkpoint(directory, command, options, num_cores = 4, force_rer
     COMMAND += f"2>&1 "
     COMMAND += "| awk '{ print strftime(), $0; fflush() }' "
     COMMAND += f"| tee {directory}/logs_cpt.txt "
-    task = Task(command=COMMAND)
+    task = Task(command=COMMAND, directory=directory)
     if task in tasks:
-        print(f"Task {COMMAND} already exists!")
-        exit(1)
+        print(f"Task {COMMAND} already exists! Ignoring...")
+        for i in range(len(tasks)):
+            if tasks[i] == task:
+                return i
+        assert False, f"Task {COMMAND} not found in the list!"
     tasks.append(task)
     return len(tasks) - 1
 
@@ -234,11 +240,11 @@ def add_command_run_MAA(directory,
         command=f"rm -r {directory} 2>&1 > /dev/null; sleep 1; mkdir -p {directory} 2>&1 > /dev/null; sleep 1; rm -r {checkpoint}/cpt.%d 2>&1 > /dev/null; sleep 1; cp -r {checkpoint}/cpt.* {directory}/; sleep 1; {COMMAND}; sleep 1;"
     else:
         command=f"rm -r {directory} 2>&1 > /dev/null; sleep 1; mkdir -p {directory} 2>&1 > /dev/null; sleep 1; {COMMAND}; sleep 1;"
-    task = Task(command=command, dependency=checkpoint_id)
+    task = Task(command=command, directory=directory, dependency=checkpoint_id)
     if task in tasks:
-        print(f"Task {command} already exists!")
-        exit(1)
-    tasks.append(task)
+        print(f"Task {command} already exists! Ignoring...")
+    else:
+        tasks.append(task)
 
 def run_tasks(parallelism):
     print (f"There exists {len(tasks)} commands to run:")
@@ -363,9 +369,6 @@ def run_simulation(parallelism, force_rerun):
                                 mode=mode,
                                 force_rerun=force_rerun)
 
-    ########################################## RUN SELECTED EXPERIMENTS ##########################################
-    run_tasks(parallelism)
-
 def run_simulation_DMP(parallelism, force_rerun):
     print("Starting DMP/MAA simulation with the following configurations:")
     print(f"\t\tParallelism: {parallelism}")
@@ -473,9 +476,6 @@ def run_simulation_DMP(parallelism, force_rerun):
                                 options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
                                 mode=mode,
                                 force_rerun=force_rerun)
-
-    ########################################## RUN SELECTED EXPERIMENTS ##########################################
-    run_tasks(parallelism)
 
 def run_simulation_TS(parallelism, force_rerun):
     print("Starting Tile Size simulation with the following configurations:")
@@ -647,9 +647,6 @@ def run_simulation_TS(parallelism, force_rerun):
                                 mode="MAA",
                                 tile_size=tile_size,
                                 force_rerun=force_rerun)
-
-    ########################################## RUN SELECTED EXPERIMENTS ##########################################
-    run_tasks(parallelism)
 
 def run_simulation_SC(parallelism, force_rerun):
     print("Starting Scalability simulation with the following configurations:")
@@ -944,9 +941,6 @@ def run_simulation_SC(parallelism, force_rerun):
                                     num_cores=num_cores,
                                     num_maas=num_maa,
                                     force_rerun=force_rerun)
-
-    ########################################## RUN SELECTED EXPERIMENTS ##########################################
-    run_tasks(parallelism)
 
 def set_data_directory(path):
     global DATA_DIR
