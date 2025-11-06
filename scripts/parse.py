@@ -964,6 +964,27 @@ def plot_results_SC(results_path, result_dir, num_channels_4_core, num_channels_
     plt.savefig(f"{result_dir}/SC_speedup.png", bbox_inches='tight')
     plt.close()
 
+def check_log_for_errors(log_path):
+    keywords = ("RuntimeError", "aborted")
+    with open(log_path, "r", errors="ignore") as f:
+        for line in f:
+            if any(k in line for k in keywords):
+                print(f"Found: {line.strip()}")
+                return True  # stop as soon as we find one
+    return False
+
+def plot_results_MICRO(logs):
+    if os.path.exists(logs) == False:
+        return False
+    if check_log_for_errors(logs):
+        return False
+    with open(logs, "r") as f:
+        lines = f.readlines()
+        for line in lines:
+            if "End of Test, all tests correct!" in line:
+                return True
+    return False
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Parse gem5.')
     parser.add_argument('--dir', type=str, help='Path to the result directory.', required=True)

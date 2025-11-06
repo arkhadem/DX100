@@ -1,6 +1,7 @@
 import argparse
 from sim import run_simulation, run_simulation_MICRO, run_simulation_DMP, run_simulation_TS, run_simulation_SC, set_data_directory, run_tasks
-from parse import parse_results, parse_header, plot_results, plot_results_DMP, plot_results_TS, plot_results_SC
+from parse import parse_results, parse_header, plot_results, plot_results_DMP, plot_results_TS, plot_results_SC, plot_results_MICRO
+from sim import all_MICRO_modes, all_MICRO_kernels, all_MICRO_precisions, all_MICRO_sizes
 import os
 
 parser = argparse.ArgumentParser(description='Benchmarking script')
@@ -290,7 +291,21 @@ if args.a == 'parse' or args.a == 'all':
             f.write("GZZI,BASE,4M,8,0," + parse_results(f"{RSLT_DIR}_SC/gradzatz_invert/BASE/4M/8", 1, "BASE",  4) + "\n")
             f.write("GZZI,MAA,4M,8,1," + parse_results(f"{RSLT_DIR}_SC/gradzatz_invert/MAA/4M/8/1", 1, "MAA",  4) + "\n")
             f.write("GZZI,MAA,4M,8,2," + parse_results(f"{RSLT_DIR}_SC/gradzatz_invert/MAA/4M/8/2", 1, "MAA",  4) + "\n")
-            
+    
+    if args.b == "micro":
+        with open("results/results_functional.csv", "w") as f:
+            f.write("kernel,mode,size,precision,path,correctness\n")
+            for kernel in all_MICRO_kernels:
+                for mode in all_MICRO_modes:
+                    for size in all_MICRO_sizes:
+                        for precision in all_MICRO_precisions:
+                            log = f"{RSLT_DIR}/micro/{kernel}/{precision}/{size}/{mode}/logs_run.txt"
+                            f.write(f"{kernel},{mode},{size},{precision},{log},")
+                            if plot_results_MICRO(log):
+                                f.write("passed\n")
+                            else:
+                                f.write("failed\n")
+
 if args.a == "plot" or args.a == "all":
     if args.b == 'main' or args.b == 'all':
         plot_results("results/results_main.csv", "results", 2)
