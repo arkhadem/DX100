@@ -1,13 +1,15 @@
 import argparse
-from sim import run_simulation, run_simulation_DMP, run_simulation_TS, run_simulation_SC, set_data_directory, run_tasks
+from sim import run_simulation, run_simulation_MICRO, run_simulation_DMP, run_simulation_TS, run_simulation_SC, set_data_directory, run_tasks
 from parse import parse_results, parse_header, plot_results, plot_results_DMP, plot_results_TS, plot_results_SC
 import os
 
 parser = argparse.ArgumentParser(description='Benchmarking script')
 parser.add_argument('-j', type=int, required=True, help='Number of parallel simulations')
 parser.add_argument('-a', type=str, default='all', choices=['simulate', 'parse', 'plot', 'all'], help='Action to perform')
-parser.add_argument('-b', type=str, default='main', choices=['main', 'DMP', 'TS', 'SC', 'all'], help='Type of benchmarking')
-parser.add_argument('-f', action='store_true', help='Rerun finished simulations')
+parser.add_argument('-b', type=str, default='main', choices=['main', 'DMP', 'TS', 'SC', 'micro', 'all'], help='Type of benchmarking')
+parser.add_argument('-f', action='store_true', help='Rerun both finished simulations and checkpoints')
+parser.add_argument('-fs', action='store_true', help='Rerun finished simulations')
+parser.add_argument('-fc', action='store_true', help='Rerun finished checkpoints')
 parser.add_argument('-dir', type=str, required=True, help='Data directory used for storing Gem5 simulation results')
 args = parser.parse_args()
 
@@ -18,16 +20,22 @@ set_data_directory(DATA_DIR)
 
 if args.a == 'simulate' or args.a == 'all':
     print(f'Simulating with {args.j} parallel processes')
-    if args.f:
+    rerun_cpt = args.fc or args.f
+    rerun_sim = args.fs or args.f
+    if rerun_sim:
         print('Rerunning finished simulations too')
+    if rerun_cpt:
+        print('Rerunning finished checkpoints too')
     if args.b == 'main' or args.b == 'all':
-        run_simulation(args.j, args.f)
+        run_simulation(args.j, rerun_cpt, rerun_sim)
     if args.b == 'DMP' or args.b == 'all':
-        run_simulation_DMP(args.j, args.f)
+        run_simulation_DMP(args.j, rerun_cpt, rerun_sim)
     if args.b == 'TS' or args.b == 'all':
-        run_simulation_TS(args.j, args.f)
+        run_simulation_TS(args.j, rerun_cpt, rerun_sim)
     if args.b == 'SC' or args.b == 'all':
-        run_simulation_SC(args.j, args.f)
+        run_simulation_SC(args.j, rerun_cpt, rerun_sim)
+    if args.b == 'micro':
+        run_simulation_MICRO(args.j, rerun_cpt, rerun_sim)
     ########################################## RUN SELECTED EXPERIMENTS ##########################################
     run_tasks(args.j)
 

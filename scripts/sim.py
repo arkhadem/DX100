@@ -27,6 +27,24 @@ all_SPATTER_kernels = ["xrage"]
 all_HASHJOIN_kernels = ["PRH", "PRO"]
 all_UME_kernels = ["gradzatp", "gradzatz", "gradzatz_invert", "gradzatp_invert"]
 
+all_MICRO_modes = ["CMP"]
+all_MICRO_kernels = [
+    "gather",
+    "scatter",
+    "rmw",
+    "gather_scatter",
+    "gather_rmw",
+    "gather_rmw_dst",
+    "gather_rmw_cond",
+    "gather_rmw_directrangeloop_cond",
+    "gather_rmw_indirectrangeloop_cond",
+    "gather_rmw_cond_indirectrangeloop_cond",
+    "gather_rmw_indirectcond_indirectrangeloop_indirectcond",
+    "gather_rmw_indirectcond_indirectrangeloop_indirectcond_dst",
+]
+all_MICRO_precisions = ["i32", "i64", "f32", "f64"]
+all_MICRO_sizes = ["2000000"]
+
 tasks = []
 lock = Lock()
 
@@ -97,7 +115,7 @@ mem_channels_per_core = 0.5
 program_interval = 1000
 debug_type = "MAATrace"
 
-def add_command_checkpoint(directory, command, options, num_cores = 4, force_rerun = False):
+def add_command_checkpoint(directory, command, options, num_cores = 4, force_rerun_sim = False):
     if force_rerun == False and os.path.isdir(directory):
         contents = os.listdir(directory)
         for content in contents:
@@ -262,10 +280,11 @@ def run_tasks(parallelism):
             print("T[M]: Waiting for T[{}] to join!".format(i))
             threads[i].join()
 
-def run_simulation(parallelism, force_rerun):
+def run_simulation(parallelism, force_rerun_checkpoint, force_rerun_sim):
     print("Starting BASE/MAA simulation with the following configurations:")
     print(f"\t\tParallelism: {parallelism}")
-    print(f"\t\tForce rerun: {force_rerun}")
+    print(f"\t\tForce checkpoint rerun: {force_rerun_checkpoint}")
+    print(f"\t\tForce simulation rerun: {force_rerun_sim}")
     print(f"\t\tGEM5 directory: {GEM5_DIR}")
     print(f"\t\tData directory: {DATA_DIR}")
     print(f"\t\tCheckpoint directory: {CPT_DIR}")
@@ -281,14 +300,14 @@ def run_simulation(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/{mode}/{size}",
                                                     command=f"{BNCH_DIR}/NAS/{kernel}/{file_name}",
                                                     options=mode,
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/{mode}/{size}",
                                 checkpoint=f"{CPT_DIR}/{kernel}/{mode}/{size}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/NAS/{kernel}/{file_name}",
                                 options=mode,
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
 
     ########################################## SPATTER ##########################################
     for kernel in all_SPATTER_kernels:
@@ -299,14 +318,14 @@ def run_simulation(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/spatter/{kernel}/{mode}",
                                                     command=f"{BNCH_DIR}/spatter/build/{file_name}",
                                                     options=f"-f {BNCH_DIR}/spatter/tests/test-data/{kernel}/all.json",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/spatter/{kernel}/{mode}",
                                 checkpoint=f"{CPT_DIR}/spatter/{kernel}/{mode}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/spatter/build/{file_name}",
                                 options=f"-f {BNCH_DIR}/spatter/tests/test-data/{kernel}/all.json",
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
 
     ######################################### HASHJOIN ##########################################
     size = 2000000
@@ -320,14 +339,14 @@ def run_simulation(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/{mode}/{size_str}",
                                                     command=f"{BNCH_DIR}/hashjoin/src/bin/x86/{file_name}",
                                                     options=f"-a {kernel} -n 4 -r {size} -s {size}",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/{mode}/{size_str}",
                                 checkpoint=f"{CPT_DIR}/{kernel}/{mode}/{size_str}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/hashjoin/src/bin/x86/{file_name}",
                                 options=f"-a {kernel} -n 4 -r {size} -s {size}",
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
             
     ########################################## UME ##########################################
     size = 2000000
@@ -341,14 +360,14 @@ def run_simulation(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/{mode}/{size_str}",
                                                     command=f"{BNCH_DIR}/UME/{file_name}",
                                                     options=f"{size}",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/{mode}/{size_str}",
                                 checkpoint=f"{CPT_DIR}/{kernel}/{mode}/{size_str}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/UME/{file_name}",
                                 options=f"{size}",
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
 
     ########################################## GAPB ##########################################
     for kernel in all_GAPB_kernels:
@@ -360,19 +379,20 @@ def run_simulation(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/{mode}/{size}",
                                                     command=f"{BNCH_DIR}/gapbs/{file_name}",
                                                     options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/{mode}/{size}",
                                 checkpoint=f"{CPT_DIR}/{kernel}/{mode}/{size}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/gapbs/{file_name}",
                                 options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
 
-def run_simulation_DMP(parallelism, force_rerun):
+def run_simulation_DMP(parallelism, force_rerun_checkpoint, force_rerun_sim):
     print("Starting DMP/MAA simulation with the following configurations:")
     print(f"\t\tParallelism: {parallelism}")
-    print(f"\t\tForce rerun: {force_rerun}")
+    print(f"\t\tForce checkpoint rerun: {force_rerun_checkpoint}")
+    print(f"\t\tForce simulation rerun: {force_rerun_sim}")
     print(f"\t\tGEM5 directory: {GEM5_DIR}")
     print(f"\t\tData directory: {DATA_DIR}")
     print(f"\t\tCheckpoint directory: {CPT_DIR}")
@@ -389,14 +409,14 @@ def run_simulation_DMP(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/{mode}/{size}",
                                                     command=f"{BNCH_DIR}/NAS/{kernel}/{file_name}",
                                                     options=options,
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/{mode}/{size}",
                                 checkpoint=f"{CPT_DIR}/{kernel}/{mode}/{size}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/NAS/{kernel}/{file_name}",
                                 options=options,
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
 
     ########################################## SPATTER ##########################################
     for kernel in all_SPATTER_kernels:
@@ -407,14 +427,14 @@ def run_simulation_DMP(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/spatter/{kernel}/{mode}",
                                                     command=f"{BNCH_DIR}/spatter/build/{file_name}",
                                                     options=f"-f {BNCH_DIR}/spatter/tests/test-data/{kernel}/all.json",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/spatter/{kernel}/{mode}",
                                 checkpoint=f"{CPT_DIR}/spatter/{kernel}/{mode}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/spatter/build/{file_name}",
                                 options=f"-f {BNCH_DIR}/spatter/tests/test-data/{kernel}/all.json",
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
 
     ######################################### HASHJOIN ##########################################
     size = 2000000
@@ -428,14 +448,14 @@ def run_simulation_DMP(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/{mode}/{size_str}",
                                                     command=f"{BNCH_DIR}/hashjoin/src/bin/x86/{file_name}",
                                                     options=f"-a {kernel} -n 4 -r {size} -s {size}",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/{mode}/{size_str}",
                                 checkpoint=f"{CPT_DIR}/{kernel}/{mode}/{size_str}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/hashjoin/src/bin/x86/{file_name}",
                                 options=f"-a {kernel} -n 4 -r {size} -s {size}",
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
             
     ########################################## UME ##########################################
     size = 2000000
@@ -449,14 +469,14 @@ def run_simulation_DMP(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/{mode}/{size_str}",
                                                     command=f"{BNCH_DIR}/UME/{file_name}",
                                                     options=f"{size}",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/{mode}/{size_str}",
                                 checkpoint=f"{CPT_DIR}/{kernel}/{mode}/{size_str}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/UME/{file_name}",
                                 options=f"{size}",
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
 
     ########################################## GAPB ##########################################
     for kernel in all_GAPB_kernels:
@@ -468,19 +488,20 @@ def run_simulation_DMP(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/{mode}/{size}",
                                                     command=f"{BNCH_DIR}/gapbs/{file_name}",
                                                     options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/{mode}/{size}",
                                 checkpoint=f"{CPT_DIR}/{kernel}/{mode}/{size}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/gapbs/{file_name}",
                                 options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
 
-def run_simulation_TS(parallelism, force_rerun):
+def run_simulation_TS(parallelism, force_rerun_checkpoint, force_rerun_sim):
     print("Starting Tile Size simulation with the following configurations:")
     print(f"\t\tParallelism: {parallelism}")
-    print(f"\t\tForce rerun: {force_rerun}")
+    print(f"\t\tForce checkpoint rerun: {force_rerun_checkpoint}")
+    print(f"\t\tForce simulation rerun: {force_rerun_sim}")
     print(f"\t\tGEM5 directory: {GEM5_DIR}")
     print(f"\t\tData directory: {DATA_DIR}")
     print(f"\t\tCheckpoint directory: {CPT_DIR}")
@@ -496,21 +517,21 @@ def run_simulation_TS(parallelism, force_rerun):
         checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/BASE/{size}",
                                                 command=f"{BNCH_DIR}/NAS/{kernel}/{kernel}_base",
                                                 options="BASE",
-                                                force_rerun=force_rerun)
+                                                force_rerun=force_rerun_checkpoint)
         add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/BASE/{size}",
                             checkpoint=f"{CPT_DIR}/{kernel}/BASE/{size}",
                             checkpoint_id = checkpoint_id,
                             command=f"{BNCH_DIR}/NAS/{kernel}/{kernel}_base",
                             options="BASE",
                             mode="BASE",
-                            force_rerun=force_rerun)
+                            force_rerun=force_rerun_sim)
         for tile_size, tile_size_str in zip(all_tile_sizes, all_tile_sizes_str):
             file_name = f"{kernel}_maa_{tile_size_str}"
             checkpoint_id = None
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_TS_DIR}/{kernel}/MAA/{size}/{tile_size_str}",
                                                     command=f"{BNCH_DIR}/NAS/{kernel}/{file_name}",
                                                     options="MAA",
-                                                    force_rerun=force_rerun) 
+                                                    force_rerun=force_rerun_checkpoint) 
             add_command_run_MAA(directory=f"{RSLT_TS_DIR}/{kernel}/MAA/{size}/{tile_size_str}",
                                 checkpoint=f"{CPT_TS_DIR}/{kernel}/MAA/{size}/{tile_size_str}",
                                 checkpoint_id = checkpoint_id,
@@ -518,7 +539,7 @@ def run_simulation_TS(parallelism, force_rerun):
                                 options="MAA",
                                 mode="MAA",
                                 tile_size=tile_size,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
 
     ########################################## SPATTER ##########################################
     for kernel in all_SPATTER_kernels:
@@ -526,21 +547,21 @@ def run_simulation_TS(parallelism, force_rerun):
         checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/spatter/{kernel}/BASE",
                                                 command=f"{BNCH_DIR}/spatter/build/spatter_base",
                                                 options=f"-f {BNCH_DIR}/spatter/tests/test-data/{kernel}/all.json",
-                                                force_rerun=force_rerun)
+                                                force_rerun=force_rerun_checkpoint)
         add_command_run_MAA(directory=f"{RSLT_DIR}/spatter/{kernel}/BASE",
                             checkpoint=f"{CPT_DIR}/spatter/{kernel}/BASE",
                             checkpoint_id = checkpoint_id,
                             command=f"{BNCH_DIR}/spatter/build/spatter_base",
                             options=f"-f {BNCH_DIR}/spatter/tests/test-data/{kernel}/all.json",
                             mode="BASE",
-                            force_rerun=force_rerun)
+                            force_rerun=force_rerun_sim)
         for tile_size, tile_size_str in zip(all_tile_sizes, all_tile_sizes_str):
             file_name = f"spatter_maa_{tile_size_str}"
             checkpoint_id = None
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_TS_DIR}/spatter/{kernel}/MAA/{tile_size_str}",
                                                     command=f"{BNCH_DIR}/spatter/build/{file_name}",
                                                     options=f"-f {BNCH_DIR}/spatter/tests/test-data/{kernel}/all.json",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_TS_DIR}/spatter/{kernel}/MAA/{tile_size_str}",
                                 checkpoint=f"{CPT_TS_DIR}/spatter/{kernel}/MAA/{tile_size_str}",
                                 checkpoint_id = checkpoint_id,
@@ -548,7 +569,7 @@ def run_simulation_TS(parallelism, force_rerun):
                                 options=f"-f {BNCH_DIR}/spatter/tests/test-data/{kernel}/all.json",
                                 mode="MAA",
                                 tile_size=tile_size,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
 
     ######################################### HASHJOIN ##########################################
     size = 2000000
@@ -559,21 +580,21 @@ def run_simulation_TS(parallelism, force_rerun):
         checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/BASE/{size_str}",
                                                 command=f"{BNCH_DIR}/hashjoin/src/bin/x86/hj_base",
                                                 options=f"-a {kernel} -n 4 -r {size} -s {size}",
-                                                force_rerun=force_rerun)
+                                                force_rerun=force_rerun_checkpoint)
         add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/BASE/{size_str}",
                             checkpoint=f"{CPT_DIR}/{kernel}/BASE/{size_str}",
                             checkpoint_id = checkpoint_id,
                             command=f"{BNCH_DIR}/hashjoin/src/bin/x86/hj_base",
                             options=f"-a {kernel} -n 4 -r {size} -s {size}",
                             mode="BASE",
-                            force_rerun=force_rerun)
+                            force_rerun=force_rerun_sim)
         for tile_size, tile_size_str in zip(all_tile_sizes, all_tile_sizes_str):
             file_name = f"hj_maa_{tile_size_str}"
             checkpoint_id = None
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_TS_DIR}/{kernel}/MAA/{size_str}/{tile_size_str}",
                                                     command=f"{BNCH_DIR}/hashjoin/src/bin/x86/{file_name}",
                                                     options=f"-a {kernel} -n 4 -r {size} -s {size}",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_TS_DIR}/{kernel}/MAA/{size_str}/{tile_size_str}",
                                 checkpoint=f"{CPT_TS_DIR}/{kernel}/MAA/{size_str}/{tile_size_str}",
                                 checkpoint_id = checkpoint_id,
@@ -581,7 +602,7 @@ def run_simulation_TS(parallelism, force_rerun):
                                 options=f"-a {kernel} -n 4 -r {size} -s {size}",
                                 mode="MAA",
                                 tile_size=tile_size,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
             
     ########################################## UME ##########################################
     size = 2000000
@@ -592,21 +613,21 @@ def run_simulation_TS(parallelism, force_rerun):
         checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/BASE/{size_str}",
                                                 command=f"{BNCH_DIR}/UME/{kernel}_bases",
                                                 options=f"{size}",
-                                                force_rerun=force_rerun)
+                                                force_rerun=force_rerun_checkpoint)
         add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/BASE/{size_str}",
                             checkpoint=f"{CPT_DIR}/{kernel}/BASE/{size_str}",
                             checkpoint_id = checkpoint_id,
                             command=f"{BNCH_DIR}/UME/{kernel}_bases",
                             options=f"{size}",
                             mode="BASE",
-                            force_rerun=force_rerun)
+                            force_rerun=force_rerun_sim)
         for tile_size, tile_size_str in zip(all_tile_sizes, all_tile_sizes_str):
             file_name = f"{kernel}_maa_{tile_size_str}"
             checkpoint_id = None
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_TS_DIR}/{kernel}/MAA/{size_str}/{tile_size_str}",
                                                 command=f"{BNCH_DIR}/UME/{file_name}",
                                                 options=f"{size}",
-                                                force_rerun=force_rerun)
+                                                force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_TS_DIR}/{kernel}/MAA/{size_str}/{tile_size_str}",
                                 checkpoint=f"{CPT_TS_DIR}/{kernel}/MAA/{size_str}/{tile_size_str}",
                                 checkpoint_id = checkpoint_id,
@@ -614,7 +635,7 @@ def run_simulation_TS(parallelism, force_rerun):
                                 options=f"{size}",
                                 mode="MAA",
                                 tile_size=tile_size,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
 
     ########################################## GAPB ##########################################
     for kernel in all_GAPB_kernels:
@@ -624,21 +645,21 @@ def run_simulation_TS(parallelism, force_rerun):
         checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/BASE/{size}",
                                                 command=f"{BNCH_DIR}/gapbs/{kernel}",
                                                 options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
-                                                force_rerun=force_rerun)
+                                                force_rerun=force_rerun_checkpoint)
         add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/BASE/{size}",
                             checkpoint=f"{CPT_DIR}/{kernel}/BASE/{size}",
                             checkpoint_id = checkpoint_id,
                             command=f"{BNCH_DIR}/gapbs/{kernel}",
                             options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
                             mode="BASE",
-                            force_rerun=force_rerun)
+                            force_rerun=force_rerun_sim)
         for tile_size, tile_size_str in zip(all_tile_sizes, all_tile_sizes_str):
             file_name = f"{kernel}_maa_{tile_size_str}"
             checkpoint_id = None
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_TS_DIR}/{kernel}/MAA/{size}/{tile_size_str}",
                                                     command=f"{BNCH_DIR}/gapbs/{file_name}",
                                                     options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_TS_DIR}/{kernel}/MAA/{size}/{tile_size_str}",
                                 checkpoint=f"{CPT_TS_DIR}/{kernel}/MAA/{size}/{tile_size_str}",
                                 checkpoint_id = checkpoint_id,
@@ -646,12 +667,13 @@ def run_simulation_TS(parallelism, force_rerun):
                                 options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
                                 mode="MAA",
                                 tile_size=tile_size,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
 
-def run_simulation_SC(parallelism, force_rerun):
+def run_simulation_SC(parallelism, force_rerun_checkpoint, force_rerun_sim):
     print("Starting Scalability simulation with the following configurations:")
     print(f"\t\tParallelism: {parallelism}")
-    print(f"\t\tForce rerun: {force_rerun}")
+    print(f"\t\tForce checkpoint rerun: {force_rerun_checkpoint}")
+    print(f"\t\tForce simulation rerun: {force_rerun_sim}")
     print(f"\t\tGEM5 directory: {GEM5_DIR}")
     print(f"\t\tData directory: {DATA_DIR}")
     print(f"\t\tCheckpoint directory: {CPT_DIR}")
@@ -670,14 +692,14 @@ def run_simulation_SC(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/{mode}/{size}",
                                                     command=f"{BNCH_DIR}/NAS/{kernel}/{file_name}",
                                                     options=mode,
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/{mode}/{size}",
                                 checkpoint=f"{CPT_DIR}/{kernel}/{mode}/{size}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/NAS/{kernel}/{file_name}",
                                 options=mode,
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
         # 8 cores -- 1/2 MAAs
         for num_cores, num_maas in zip(all_scaling_cores, all_scaling_maas):
             # BASE mode
@@ -686,7 +708,7 @@ def run_simulation_SC(parallelism, force_rerun):
                                                     command=f"{BNCH_DIR}/NAS/{kernel}/{kernel}_base_{num_cores}C",
                                                     options="BASE",
                                                     num_cores=num_cores,
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_SC_DIR}/{kernel}/BASE/{size}/{num_cores}",
                                 checkpoint=f"{CPT_SC_DIR}/{kernel}/BASE/{size}/{num_cores}",
                                 checkpoint_id = checkpoint_id,
@@ -694,14 +716,14 @@ def run_simulation_SC(parallelism, force_rerun):
                                 options="BASE",
                                 mode="MAA",
                                 num_cores=num_cores,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
             # checkpoint for MAA mode
             checkpoint_id = None
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_SC_DIR}/{kernel}/MAA/{size}/{num_cores}",
                                                     command=f"{BNCH_DIR}/NAS/{kernel}/{kernel}_maa_{num_cores}C",
                                                     options="MAA",
                                                     num_cores=num_cores,
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             # simulation for 1/2 MAAs, MAA Mode
             for num_maa in num_maas:
                 add_command_run_MAA(directory=f"{RSLT_SC_DIR}/{kernel}/MAA/{size}/{num_cores}/{num_maa}",
@@ -712,7 +734,7 @@ def run_simulation_SC(parallelism, force_rerun):
                                     mode="MAA",
                                     num_cores=num_cores,
                                     num_maas=num_maa,
-                                    force_rerun=force_rerun)
+                                    force_rerun=force_rerun_sim)
 
 
     ########################################## SPATTER ##########################################
@@ -724,14 +746,14 @@ def run_simulation_SC(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/spatter/{kernel}/{mode}",
                                                     command=f"{BNCH_DIR}/spatter/build/{file_name}",
                                                     options=f"-f {BNCH_DIR}/spatter/tests/test-data/{kernel}/all.json",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/spatter/{kernel}/{mode}",
                                 checkpoint=f"{CPT_DIR}/spatter/{kernel}/{mode}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/spatter/build/{file_name}",
                                 options=f"-f {BNCH_DIR}/spatter/tests/test-data/{kernel}/all.json",
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
         # 8 cores -- 1/2 MAAs
         for num_cores, num_maas in zip(all_scaling_cores, all_scaling_maas):
             # BASE mode
@@ -740,7 +762,7 @@ def run_simulation_SC(parallelism, force_rerun):
                                                     command=f"{BNCH_DIR}/spatter/build/spatter_base",
                                                     options=f"-f {BNCH_DIR}/spatter/tests/test-data/{kernel}/all.json",
                                                     num_cores=num_cores,
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_SC_DIR}/spatter/{kernel}/BASE/{num_cores}",
                                 checkpoint=f"{CPT_SC_DIR}/spatter/{kernel}/BASE/{num_cores}",
                                 checkpoint_id = checkpoint_id,
@@ -748,14 +770,14 @@ def run_simulation_SC(parallelism, force_rerun):
                                 options=f"-f {BNCH_DIR}/spatter/tests/test-data/{kernel}/all.json",
                                 mode="BASE",
                                 num_cores=num_cores,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
             # checkpoint for MAA mode
             checkpoint_id = None
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_SC_DIR}/spatter/{kernel}/MAA/{num_cores}",
                                                     command=f"{BNCH_DIR}/spatter/build/spatter_maa_{num_cores}C",
                                                     options=f"-f {BNCH_DIR}/spatter/tests/test-data/{kernel}/all.json",
                                                     num_cores=num_cores,
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             # simulation for 1/2 MAAs, MAA Mode
             for num_maa in num_maas:
                 add_command_run_MAA(directory=f"{RSLT_SC_DIR}/spatter/{kernel}/MAA/{num_cores}/{num_maa}",
@@ -766,7 +788,7 @@ def run_simulation_SC(parallelism, force_rerun):
                                     mode="MAA",
                                     num_cores=num_cores,
                                     num_maas=num_maa,
-                                    force_rerun=force_rerun)
+                                    force_rerun=force_rerun_sim)
 
     ######################################### HASHJOIN ##########################################
     size = 2000000
@@ -780,14 +802,14 @@ def run_simulation_SC(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/{mode}/{size_str}",
                                                     command=f"{BNCH_DIR}/hashjoin/src/bin/x86/{file_name}",
                                                     options=f"-a {kernel} -n 4 -r {size} -s {size}",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/{mode}/{size_str}",
                                 checkpoint=f"{CPT_DIR}/{kernel}/{mode}/{size_str}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/hashjoin/src/bin/x86/{file_name}",
                                 options=f"-a {kernel} -n 4 -r {size} -s {size}",
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
         # 8 cores -- 1/2 MAAs
         for num_cores, num_maas in zip(all_scaling_cores, all_scaling_maas):
             csize = size_per_core * num_cores
@@ -798,7 +820,7 @@ def run_simulation_SC(parallelism, force_rerun):
                                                     command=f"{BNCH_DIR}/hashjoin/src/bin/x86/hj_base",
                                                     options=f"-a {kernel} -n {num_cores} -r {csize} -s {csize}",
                                                     num_cores=num_cores,
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_SC_DIR}/{kernel}/BASE/{csize_str}/{num_cores}",
                                 checkpoint=f"{CPT_SC_DIR}/{kernel}/BASE/{csize_str}/{num_cores}",
                                 checkpoint_id = checkpoint_id,
@@ -806,14 +828,14 @@ def run_simulation_SC(parallelism, force_rerun):
                                 options=f"-a {kernel} -n {num_cores} -r {csize} -s {csize}",
                                 mode="BASE",
                                 num_cores=num_cores,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
             # checkpoint for MAA mode
             checkpoint_id = None
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_SC_DIR}/{kernel}/MAA/{csize_str}/{num_cores}",
                                                     command=f"{BNCH_DIR}/hashjoin/src/bin/x86/hj_maa_{num_cores}C",
                                                     options=f"-a {kernel} -n {num_cores} -r {csize} -s {csize}",
                                                     num_cores=num_cores,
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             # simulation for 1/2 MAAs, MAA Mode
             for num_maa in num_maas:
                 add_command_run_MAA(directory=f"{RSLT_SC_DIR}/{kernel}/MAA/{csize_str}/{num_cores}/{num_maa}",
@@ -824,7 +846,7 @@ def run_simulation_SC(parallelism, force_rerun):
                                     mode="MAA",
                                     num_cores=num_cores,
                                     num_maas=num_maa,
-                                    force_rerun=force_rerun)
+                                    force_rerun=force_rerun_sim)
 
     ########################################## UME ##########################################
     size = 2000000
@@ -839,14 +861,14 @@ def run_simulation_SC(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/{mode}/{size_str}",
                                                     command=f"{BNCH_DIR}/UME/{file_name}",
                                                     options=f"{size}",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/{mode}/{size_str}",
                                 checkpoint=f"{CPT_DIR}/{kernel}/{mode}/{size_str}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/UME/{file_name}",
                                 options=f"{size}",
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
         # 8 cores -- 1/2 MAAs
         for num_cores, num_maas in zip(all_scaling_cores, all_scaling_maas):
             csize = size_per_core * num_cores
@@ -857,7 +879,7 @@ def run_simulation_SC(parallelism, force_rerun):
                                                     command=f"{BNCH_DIR}/UME/{kernel}_base",
                                                     options=f"{csize}",
                                                     num_cores=num_cores,
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_SC_DIR}/{kernel}/BASE/{csize_str}/{num_cores}",
                                 checkpoint=f"{CPT_SC_DIR}/{kernel}/BASE/{csize_str}/{num_cores}",
                                 checkpoint_id = checkpoint_id,
@@ -865,14 +887,14 @@ def run_simulation_SC(parallelism, force_rerun):
                                 options=f"{csize}",
                                 mode="BASE",
                                 num_cores=num_cores,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
             # checkpoint for MAA mode
             checkpoint_id = None
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_SC_DIR}/{kernel}/MAA/{csize_str}/{num_cores}",
                                                     command=f"{BNCH_DIR}/UME/{kernel}_maa_{num_cores}C",
                                                     options=f"{csize}",
                                                     num_cores=num_cores,
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             # simulation for 1/2 MAAs, MAA Mode
             for num_maa in num_maas:
                 add_command_run_MAA(directory=f"{RSLT_SC_DIR}/{kernel}/MAA/{csize_str}/{num_cores}/{num_maa}",
@@ -883,7 +905,7 @@ def run_simulation_SC(parallelism, force_rerun):
                                     mode="MAA",
                                     num_cores=num_cores,
                                     num_maas=num_maa,
-                                    force_rerun=force_rerun)
+                                    force_rerun=force_rerun_sim)
 
     ########################################## GAPB ##########################################
     for kernel in all_GAPB_kernels:
@@ -896,14 +918,14 @@ def run_simulation_SC(parallelism, force_rerun):
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_DIR}/{kernel}/{mode}/{size}",
                                                     command=f"{BNCH_DIR}/gapbs/{file_name}",
                                                     options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_DIR}/{kernel}/{mode}/{size}",
                                 checkpoint=f"{CPT_DIR}/{kernel}/{mode}/{size}",
                                 checkpoint_id = checkpoint_id,
                                 command=f"{BNCH_DIR}/gapbs/{file_name}",
                                 options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
                                 mode=mode,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
         # 8 cores -- 1/2 MAAs
         for num_cores, num_maas in zip(all_scaling_cores, all_scaling_maas):
             lsize = 0 if num_cores == 4 else 1 if num_cores == 8 else 2
@@ -914,7 +936,7 @@ def run_simulation_SC(parallelism, force_rerun):
                                                     command=f"{BNCH_DIR}/gapbs/{kernel}",
                                                     options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
                                                     num_cores=num_cores,
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             add_command_run_MAA(directory=f"{RSLT_SC_DIR}/{kernel}/BASE/{size}/{num_cores}",
                                 checkpoint=f"{CPT_SC_DIR}/{kernel}/BASE/{size}/{num_cores}",
                                 checkpoint_id = checkpoint_id,
@@ -922,14 +944,14 @@ def run_simulation_SC(parallelism, force_rerun):
                                 options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
                                 mode=mode,
                                 num_cores=num_cores,
-                                force_rerun=force_rerun)
+                                force_rerun=force_rerun_sim)
             # checkpoint for MAA mode
             checkpoint_id = None
             checkpoint_id = add_command_checkpoint(directory=f"{CPT_SC_DIR}/{kernel}/MAA/{size}/{num_cores}",
                                                     command=f"{BNCH_DIR}/gapbs/{kernel}_maa_{num_cores}C",
                                                     options=f"-f {BNCH_DIR}/gapbs/serialized_graph_{size}.{graph_ext} -l -n 1",
                                                     num_cores=num_cores,
-                                                    force_rerun=force_rerun)
+                                                    force_rerun=force_rerun_checkpoint)
             # simulation for 1/2 MAAs, MAA Mode
             for num_maa in num_maas:
                 add_command_run_MAA(directory=f"{RSLT_SC_DIR}/{kernel}/MAA/{size}/{num_cores}/{num_maa}",
@@ -940,7 +962,38 @@ def run_simulation_SC(parallelism, force_rerun):
                                     mode=mode,
                                     num_cores=num_cores,
                                     num_maas=num_maa,
-                                    force_rerun=force_rerun)
+                                    force_rerun=force_rerun_sim)
+
+def run_simulation_MICRO(parallelism, force_rerun_checkpoint, force_rerun_sim):
+    print("Starting MICRO simulation with the following configurations:")
+    print(f"\t\tParallelism: {parallelism}")
+    print(f"\t\tForce checkpoint rerun: {force_rerun_checkpoint}")
+    print(f"\t\tForce simulation rerun: {force_rerun_sim}")
+    print(f"\t\tGEM5 directory: {GEM5_DIR}")
+    print(f"\t\tData directory: {DATA_DIR}")
+    print(f"\t\tCheckpoint directory: {CPT_DIR}")
+    print(f"\t\tResult directory: {RSLT_DIR}")
+    print(f"\t\tBenchmark directory: {BNCH_DIR}")
+
+    ########################################## MICRO ##########################################
+    for precision in all_MICRO_precisions:
+        for size in all_MICRO_sizes:
+            for mode in all_MICRO_modes:
+                for kernel in all_MICRO_kernels:
+                    checkpoint_id = None
+                    checkpoint_id = add_command_checkpoint(
+                        directory=f"{CPT_DIR}/micro/{kernel}/{precision}/{size}/{mode}",
+                        command=f"{BNCH_DIR}/API/test_functional.o",
+                        options=f"{size} {mode} {precision} {kernel}",
+                        force_rerun=force_rerun_checkpoint,
+                    )
+                    add_command_run_MAA(directory=f"{RSLT_DIR}/micro/{kernel}/{precision}/{size}/{mode}",
+                                        checkpoint=f"{CPT_DIR}/micro/{kernel}/{precision}/{size}/{mode}",
+                                        checkpoint_id=checkpoint_id,
+                                        command=f"{BNCH_DIR}/API/test_functional.o",
+                                        options=f"{size} {mode} {precision} {kernel}",
+                                        mode="MAA" if mode == "CMP" else mode,
+                                        force_rerun=force_rerun_sim)
 
 def set_data_directory(path):
     global DATA_DIR
