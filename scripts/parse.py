@@ -599,6 +599,8 @@ def read_results(line, num_channels, offset):
     if cycle == 0:
         return kernel, mode, 0, 0, 0, 0, 0, 0, 0, 0
     
+    if total_instrs == 0:
+	    total_instrs = 1
     L1_MPKI = (L1_T_Misses * 1000.00) / total_instrs
     L2_MPKI = (L2_T_Misses * 1000.00) / total_instrs
     L3_MPKI = (L3_T_Misses * 1000.00) / total_instrs

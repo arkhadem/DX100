@@ -115,7 +115,7 @@ mem_channels_per_core = 0.5
 program_interval = 1000
 debug_type = "MAATrace"
 
-def add_command_checkpoint(directory, command, options, num_cores = 4, force_rerun_sim = False):
+def add_command_checkpoint(directory, command, options, num_cores = 4, force_rerun = False):
     if force_rerun == False and os.path.isdir(directory):
         contents = os.listdir(directory)
         for content in contents:
