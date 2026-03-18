@@ -424,7 +424,7 @@ void IndirectAccessUnit::checkTileReady() {
 bool IndirectAccessUnit::checkElementReady() {
     bool cond_ready = my_cond_tile == -1 || maa->spd->getElementFinished(my_cond_tile, my_i, 4, (uint8_t)FuncUnitType::INDIRECT, my_indirect_id);
     bool idx_ready = cond_ready && maa->spd->getElementFinished(my_idx_tile, my_i, 4, (uint8_t)FuncUnitType::INDIRECT, my_indirect_id);
-    bool src_ready = idx_ready && (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD || my_instruction->opcode == Instruction::OpcodeType::INDIR_RMW_SCALAR || my_instruction->opcode == Instruction::OpcodeType::INDIR_ST_SCALAR || maa->spd->getElementFinished(my_src_tile, my_i, my_word_size, (uint8_t)FuncUnitType::INDIRECT, my_indirect_id));
+    bool src_ready = idx_ready && (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD || my_instruction->opcode == Instruction::OpcodeType::INDIR_LD_REP || my_instruction->opcode == Instruction::OpcodeType::INDIR_RMW_SCALAR || my_instruction->opcode == Instruction::OpcodeType::INDIR_ST_SCALAR || maa->spd->getElementFinished(my_src_tile, my_i, my_word_size, (uint8_t)FuncUnitType::INDIRECT, my_indirect_id));
     if (cond_ready == false) {
         DPRINTF(MAAIndirect, "I[%d] %s: cond tile[%d] element[%d] not ready, returning!\n", my_indirect_id, __func__, my_cond_tile, my_i);
     } else if (idx_ready == false) {
@@ -549,7 +549,8 @@ void IndirectAccessUnit::executeInstruction() {
         my_cond_tile = my_instruction->condSpdID;
         if (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD ||
             my_instruction->opcode == Instruction::OpcodeType::INDIR_RMW_VECTOR ||
-            my_instruction->opcode == Instruction::OpcodeType::INDIR_RMW_SCALAR) {
+            my_instruction->opcode == Instruction::OpcodeType::INDIR_RMW_SCALAR ||
+            my_instruction->opcode == Instruction::OpcodeType::INDIR_LD_REP) {
             my_is_load = true;
         } else if (my_instruction->opcode == Instruction::OpcodeType::INDIR_ST_VECTOR ||
                    my_instruction->opcode == Instruction::OpcodeType::INDIR_ST_SCALAR) {
@@ -557,7 +558,8 @@ void IndirectAccessUnit::executeInstruction() {
         } else {
             assert(false);
         }
-        if (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD) {
+        if (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD ||
+            my_instruction->opcode == Instruction::OpcodeType::INDIR_LD_REP) {
             my_word_size = my_instruction->getWordSize(my_dst_tile);
         } else if (my_instruction->opcode == Instruction::OpcodeType::INDIR_ST_VECTOR ||
                    my_instruction->opcode == Instruction::OpcodeType::INDIR_RMW_VECTOR) {
@@ -571,7 +573,8 @@ void IndirectAccessUnit::executeInstruction() {
         my_words_per_cl = 64 / my_word_size;
         maa->stats.numInst++;
         (*maa->stats.IND_NumInsts[my_indirect_id])++;
-        if (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD) {
+        if (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD ||
+            my_instruction->opcode == Instruction::OpcodeType::INDIR_LD_REP) {
             maa->stats.numInst_INDRD++;
         } else if (my_instruction->opcode == Instruction::OpcodeType::INDIR_ST_SCALAR ||
                    my_instruction->opcode == Instruction::OpcodeType::INDIR_ST_VECTOR) {
@@ -584,7 +587,7 @@ void IndirectAccessUnit::executeInstruction() {
         }
         my_cond_tile_ready = (my_cond_tile == -1) ? true : false;
         my_idx_tile_ready = false;
-        my_src_tile_ready = (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD || my_instruction->opcode == Instruction::OpcodeType::INDIR_ST_SCALAR || my_instruction->opcode == Instruction::OpcodeType::INDIR_RMW_SCALAR) ? true : false;
+        my_src_tile_ready = (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD || my_instruction->opcode == Instruction::OpcodeType::INDIR_LD_REP || my_instruction->opcode == Instruction::OpcodeType::INDIR_ST_SCALAR || my_instruction->opcode == Instruction::OpcodeType::INDIR_RMW_SCALAR) ? true : false;
         my_RT_config = getRowTableConfig(my_base_addr);
 
         // Initialization
@@ -787,7 +790,8 @@ void IndirectAccessUnit::executeInstruction() {
         state = Status::Idle;
         check_reset();
         maa->finishInstructionCompute(my_instruction);
-        if (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD) {
+        if (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD
+            || my_instruction->opcode == Instruction::OpcodeType::INDIR_LD_REP) {
             maa->stats.cycles_INDRD += total_cycles;
         } else if (my_instruction->opcode == Instruction::OpcodeType::INDIR_ST_SCALAR ||
                    my_instruction->opcode == Instruction::OpcodeType::INDIR_ST_VECTOR) {

@@ -43,9 +43,10 @@ public:
         ALU_SCALAR = 8,
         ALU_VECTOR = 9,
         ALU_REDUCE = 10,
+        INDIR_LD_REP = 11,
         MAX
     };
-    std::string opcode_names[11] = {
+    std::string opcode_names[12] = {
         "STREAM_LD",
         "STREAM_ST",
         "INDIR_LD",
@@ -56,7 +57,9 @@ public:
         "RANGE_LOOP",
         "ALU_SCALAR",
         "ALU_VECTOR",
-        "ALU_REDUCE"};
+        "ALU_REDUCE",
+        "INDIR_LD_REP"
+    };
     enum class OPType : uint8_t {
         ADD_OP = 0,
         SUB_OP = 1,
