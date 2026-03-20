@@ -71,14 +71,37 @@ protected:
     unsigned int num_request_table_addresses;
     unsigned int num_request_table_entries_per_address;
     Status state;
-    RequestTable *request_table;
+    static constexpr int NUM_REQUEST_TABLE_CONFIGS = 3;
+    static constexpr int STR_CONFIG_CACHE_ENTRIES = 16;
+    RequestTable *request_tables[NUM_REQUEST_TABLE_CONFIGS];
+    RequestTable *request_table; // points to request_tables[config] for current instruction
+    Addr *STR_config_addr;
+    int *STR_config_cache;
+    Tick *STR_config_cache_tick;
     int dst_tile_id;
+    int my_current_config;      // config in use for current instruction
+    bool my_config_cache_hit;   // whether config came from cache hit or miss
 
 public:
     StreamAccessUnit();
     ~StreamAccessUnit() {
-        if (request_table != nullptr) {
-            delete request_table;
+        for (int i = 0; i < NUM_REQUEST_TABLE_CONFIGS; i++) {
+            if (request_tables[i] != nullptr) {
+                delete request_tables[i];
+                request_tables[i] = nullptr;
+            }
+        }
+        if (STR_config_addr != nullptr) {
+            delete[] STR_config_addr;
+            STR_config_addr = nullptr;
+        }
+        if (STR_config_cache != nullptr) {
+            delete[] STR_config_cache;
+            STR_config_cache = nullptr;
+        }
+        if (STR_config_cache_tick != nullptr) {
+            delete[] STR_config_cache_tick;
+            STR_config_cache_tick = nullptr;
         }
     }
     void allocate(int _my_stream_id, unsigned int _num_request_table_addresses, unsigned int _num_request_table_entries_per_address, unsigned int _num_tile_elements, MAA *_maa);
@@ -114,6 +137,9 @@ protected:
     int my_src_tile, my_dst_tile, my_cond_tile, my_min, my_max, my_stride;
     int my_received_responses, my_sent_requests;
     int my_stream_id;
+    // Metrics from last fill (for request-table config sanity check / future use)
+    unsigned int my_inst_num_addresses_used;
+    unsigned int my_inst_max_entries_per_address;
     Tick my_SPD_read_finish_tick;
     Tick my_SPD_write_finish_tick;
     Tick my_RT_access_finish_tick;
@@ -133,6 +159,8 @@ protected:
     int getGBGAddr(int channel, int rank, int bankgroup);
     PageInfo getPageInfo(int i, Addr base_addr, int word_size, int min, int stride);
     bool fillCurrentPageInfos();
+    int getRequestTableConfig(Addr base_addr, bool *was_hit = nullptr);
+    void setRequestTableConfig(Addr base_addr, unsigned num_addresses_used, unsigned max_entries_per_address);
 };
 } // namespace gem5
 

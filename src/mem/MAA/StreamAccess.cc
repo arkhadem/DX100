@@ -8,6 +8,7 @@
 #include "debug/MAATrace.hh"
 #include "sim/cur_tick.hh"
 #include <cassert>
+#include <map>
 
 #ifndef TRACING_ON
 #define TRACING_ON 1
@@ -22,8 +23,15 @@ namespace gem5 {
 ///////////////
 StreamAccessUnit::StreamAccessUnit()
     : executeInstructionEvent([this] { executeInstruction(); }, name()) {
+    for (int i = 0; i < NUM_REQUEST_TABLE_CONFIGS; i++)
+        request_tables[i] = nullptr;
     request_table = nullptr;
+    STR_config_addr = nullptr;
+    STR_config_cache = nullptr;
+    STR_config_cache_tick = nullptr;
     my_instruction = nullptr;
+    my_inst_num_addresses_used = 0;
+    my_inst_max_entries_per_address = 0;
 }
 void StreamAccessUnit::allocate(int _my_stream_id, unsigned int _num_request_table_addresses, unsigned int _num_request_table_entries_per_address, unsigned int _num_tile_elements, MAA *_maa) {
     my_stream_id = _my_stream_id;
@@ -33,9 +41,85 @@ void StreamAccessUnit::allocate(int _my_stream_id, unsigned int _num_request_tab
     state = Status::Idle;
     maa = _maa;
     dst_tile_id = -1;
-    request_table = new RequestTable(maa, num_request_table_addresses, num_request_table_entries_per_address, my_stream_id, true);
+    // Config 0: fewer addresses, more entries each. Config 1: default. Config 2: more addresses, fewer entries each.
+    const unsigned int addrs[NUM_REQUEST_TABLE_CONFIGS] = {64, 128, 256};
+    const unsigned int entries[NUM_REQUEST_TABLE_CONFIGS] = {32, 16, 8};
+    for (int i = 0; i < NUM_REQUEST_TABLE_CONFIGS; i++) {
+        request_tables[i] = new RequestTable(maa, addrs[i], entries[i], my_stream_id, true);
+    }
+    request_table = request_tables[1]; // default
+    STR_config_addr = new Addr[STR_CONFIG_CACHE_ENTRIES];
+    STR_config_cache = new int[STR_CONFIG_CACHE_ENTRIES];
+    STR_config_cache_tick = new Tick[STR_CONFIG_CACHE_ENTRIES];
+    for (int i = 0; i < STR_CONFIG_CACHE_ENTRIES; i++) {
+        STR_config_addr[i] = 0;
+        STR_config_cache[i] = 1; // default config 1
+        STR_config_cache_tick[i] = 0;
+    }
     my_translation_done = false;
     my_instruction = nullptr;
+}
+int StreamAccessUnit::getRequestTableConfig(Addr base_addr, bool *was_hit) {
+    Tick cur = curTick();
+    // Select an initial candidate so we always have a valid replacement slot.
+    // Otherwise, if all cache_tick entries are already > 0, oldest would stay -1.
+    int oldest = 0;
+    Tick oldest_tick = STR_config_cache_tick[0];
+    for (int i = 0; i < STR_CONFIG_CACHE_ENTRIES; i++) {
+        if (STR_config_addr[i] == base_addr) {
+            STR_config_cache_tick[i] = cur;
+            if (was_hit)
+                *was_hit = true;
+            return STR_config_cache[i];
+        }
+        if (STR_config_cache_tick[i] <= oldest_tick) {
+            oldest_tick = STR_config_cache_tick[i];
+            oldest = i;
+        }
+    }
+    STR_config_addr[oldest] = base_addr;
+    STR_config_cache[oldest] = 1;
+    STR_config_cache_tick[oldest] = cur;
+    if (was_hit)
+        *was_hit = false;
+    return 1;
+}
+void StreamAccessUnit::setRequestTableConfig(Addr base_addr, unsigned num_addresses_used, unsigned max_entries_per_address) {
+    const unsigned int addrs[NUM_REQUEST_TABLE_CONFIGS] = {64, 128, 256};
+    const unsigned int entries[NUM_REQUEST_TABLE_CONFIGS] = {32, 16, 8};
+    const float headroom = 1.25f;
+    unsigned need_addr = static_cast<unsigned>(num_addresses_used * headroom);
+    unsigned need_ent = static_cast<unsigned>(max_entries_per_address * headroom);
+    int new_config = 1;
+    for (int i = 0; i < NUM_REQUEST_TABLE_CONFIGS; i++) {
+        if (addrs[i] >= need_addr && entries[i] >= need_ent) {
+            new_config = i;
+            break;
+        }
+    }
+
+    // replace existing cache entry
+    for (int i = 0; i < STR_CONFIG_CACHE_ENTRIES; i++) {
+        if (STR_config_addr[i] == base_addr) {
+            STR_config_cache[i] = new_config;
+            STR_config_cache_tick[i] = curTick();
+            return;
+        }
+    }
+
+    // replace the oldest cache entry
+    int oldest = 0;
+    Tick oldest_tick = STR_config_cache_tick[0];
+    for (int i = 0; i < STR_CONFIG_CACHE_ENTRIES; i++) {
+        if (STR_config_cache_tick[i] <= oldest_tick) {
+            oldest_tick = STR_config_cache_tick[i];
+            oldest = i;
+        }
+    }
+    assert(oldest >= 0);
+    STR_config_addr[oldest] = base_addr;
+    STR_config_cache[oldest] = new_config;
+    STR_config_cache_tick[oldest] = curTick();
 }
 Cycles StreamAccessUnit::updateLatency(int num_spd_condread_accesses, int num_spd_srcread_accesses, int num_spd_write_accesses, int num_requesttable_accesses) {
     if (num_spd_condread_accesses != 0) {
@@ -188,6 +272,15 @@ void StreamAccessUnit::executeInstruction() {
         // Initialization
         my_received_responses = 0;
         my_sent_requests = 0;
+        bool config_hit;
+        int config = getRequestTableConfig(my_base_addr, &config_hit);
+        my_current_config = config;
+        my_config_cache_hit = config_hit;
+        if (config_hit)
+            (*maa->stats.STR_ConfigCacheHits[my_stream_id])++;
+        else
+            (*maa->stats.STR_ConfigCacheMisses[my_stream_id])++;
+        request_table = request_tables[config];
         request_table->reset();
         my_SPD_read_finish_tick = curTick();
         my_SPD_write_finish_tick = curTick();
@@ -213,6 +306,7 @@ void StreamAccessUnit::executeInstruction() {
         int num_spd_condread_accesses = 0;
         int num_request_table_cacheline_accesses = 0;
         bool broken;
+        std::map<Addr, unsigned> addr_to_count;
         bool *channel_sent = new bool[maa->m_org[ADDR_CHANNEL_LEVEL]];
         while (my_current_page_info.empty() == false && request_table->is_full() == false) {
             for (auto page_it = my_current_page_info.begin(); page_it != my_current_page_info.end() && request_table->is_full() == false;) {
@@ -267,10 +361,21 @@ void StreamAccessUnit::executeInstruction() {
                         if (request_table->add_entry(page_it->curr_idx, paddr, word_id) == false) {
                             DPRINTF(MAAStream, "S[%d] RequestTable: entry %d not added because request table is full! vaddr=0x%lx, paddr=0x%lx wid = %d\n", my_stream_id, page_it->curr_idx, block_vaddr, paddr, word_id);
                             (*maa->stats.STR_NumRTFull[my_stream_id])++;
+                            if (my_config_cache_hit)
+                                (*maa->stats.STR_NumRTFull_OnCacheHit[my_stream_id])++;
+                            else
+                                (*maa->stats.STR_NumRTFull_OnCacheMiss[my_stream_id])++;
+                            if (my_current_config == 0)
+                                (*maa->stats.STR_NumRTFull_Config0[my_stream_id])++;
+                            else if (my_current_config == 1)
+                                (*maa->stats.STR_NumRTFull_Config1[my_stream_id])++;
+                            else
+                                (*maa->stats.STR_NumRTFull_Config2[my_stream_id])++;
                             page_it++;
                             broken = true;
                             break;
                         } else {
+                            addr_to_count[paddr]++;
                             DPRINTF(MAAStream, "S[%d] RequestTable: entry %d added! vaddr=0x%lx, paddr=0x%lx wid = %d\n",
                                     my_stream_id, page_it->curr_idx, block_vaddr, paddr, word_id);
                         }
@@ -296,6 +401,18 @@ void StreamAccessUnit::executeInstruction() {
             }
         }
 
+        // Record fill metrics (for request-table config sanity check)
+        my_inst_num_addresses_used = addr_to_count.size();
+        my_inst_max_entries_per_address = 0;
+        for (const auto &kv : addr_to_count) {
+            if (kv.second > my_inst_max_entries_per_address)
+                my_inst_max_entries_per_address = kv.second;
+        }
+        DPRINTF(MAAStream,
+                "S[%d] %s: after fill base=0x%lx num_addresses_used=%u max_entries_per_address=%u (table full=%d)\n",
+                my_stream_id, __func__, my_base_addr, my_inst_num_addresses_used,
+                my_inst_max_entries_per_address, request_table->is_full());
+
         delete[] channel_sent;
         // assume parallelism = #Channels
         updateLatency(num_spd_condread_accesses, 0, 0, num_request_table_cacheline_accesses);
@@ -310,6 +427,7 @@ void StreamAccessUnit::executeInstruction() {
             } else if (my_src_tile != -1 && maa->spd->getTileStatus(my_src_tile) != SPD::TileStatus::Finished) {
                 DPRINTF(MAAStream, "S[%d] %s: Waiting for src tile %d to finish...\n", my_stream_id, __func__, my_src_tile);
             } else {
+                setRequestTableConfig(my_base_addr, my_inst_num_addresses_used, my_inst_max_entries_per_address);
                 DPRINTF(MAAStream, "S[%d] %s: state set to respond for request %s!\n", my_stream_id, __func__, my_instruction->print());
                 state = Status::Response;
                 scheduleNextExecution(true);
@@ -341,7 +459,8 @@ void StreamAccessUnit::executeInstruction() {
         }
         maa->finishInstructionCompute(my_instruction);
         my_instruction = nullptr;
-        request_table->check_reset();
+        for (int i = 0; i < NUM_REQUEST_TABLE_CONFIGS; i++)
+            request_tables[i]->check_reset();
         break;
     }
     default:

@@ -592,6 +592,14 @@ public:
         std::vector<statistics::Scalar *> STR_NumWordsInserted;
         std::vector<statistics::Scalar *> STR_NumCacheLineInserted;
         std::vector<statistics::Scalar *> STR_NumRTFull;
+        /** Stream Unit -- Config cache and RT-full breakdown. */
+        std::vector<statistics::Scalar *> STR_ConfigCacheHits;
+        std::vector<statistics::Scalar *> STR_ConfigCacheMisses;
+        std::vector<statistics::Scalar *> STR_NumRTFull_OnCacheHit;
+        std::vector<statistics::Scalar *> STR_NumRTFull_OnCacheMiss;
+        std::vector<statistics::Scalar *> STR_NumRTFull_Config0;
+        std::vector<statistics::Scalar *> STR_NumRTFull_Config1;
+        std::vector<statistics::Scalar *> STR_NumRTFull_Config2;
         std::vector<statistics::Formula *> STR_AvgWordsPerCacheLine;
         std::vector<statistics::Formula *> STR_AvgCacheLinesPerInst;
         std::vector<statistics::Formula *> STR_AvgRTFullsPerInst;

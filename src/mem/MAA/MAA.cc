@@ -760,6 +760,25 @@ void MAA::MAAStats::preDumpStats() {
     cycles_TOTAL = maa->getTicksToCycles(maa->getCurTick() - maa->my_last_reset_tick);
     if (maa->allFuncUnitsIdle())
         cycles_IDLE += maa->getTicksToCycles(maa->getCurTick() - maa->my_last_idle_tick);
+
+    // Print row-table and config-cache metrics at the end of the run.
+    // This must not rely on gem5's tracing/debug-flag machinery.
+    if (!maa->stats.STR_NumRTFull.empty() && maa->stats.STR_NumRTFull[0] != nullptr) {
+        printf("system.maa.S0_STR_NumRTFull=%g\n", maa->stats.STR_NumRTFull[0]->value());
+        if (!maa->stats.STR_NumInsts.empty() && maa->stats.STR_NumInsts[0] != nullptr) {
+            printf("system.maa.S0_STR_NumInsts=%g\n", maa->stats.STR_NumInsts[0]->value());
+        }
+        if (!maa->stats.STR_ConfigCacheHits.empty() && maa->stats.STR_ConfigCacheHits[0] != nullptr) {
+            printf("system.maa.S0_STR_ConfigCacheHits=%g\n", maa->stats.STR_ConfigCacheHits[0]->value());
+            printf("system.maa.S0_STR_ConfigCacheMisses=%g\n", maa->stats.STR_ConfigCacheMisses[0]->value());
+            printf("system.maa.S0_STR_NumRTFull_OnCacheHit=%g\n", maa->stats.STR_NumRTFull_OnCacheHit[0]->value());
+            printf("system.maa.S0_STR_NumRTFull_OnCacheMiss=%g\n", maa->stats.STR_NumRTFull_OnCacheMiss[0]->value());
+            printf("system.maa.S0_STR_NumRTFull_Config0=%g Config1=%g Config2=%g\n",
+                   maa->stats.STR_NumRTFull_Config0[0]->value(),
+                   maa->stats.STR_NumRTFull_Config1[0]->value(),
+                   maa->stats.STR_NumRTFull_Config2[0]->value());
+        }
+    }
 }
 MAA::MAAStats::MAAStats(statistics::Group *parent, int num_maas, MAA *_maa)
     : statistics::Group(parent),
@@ -1002,6 +1021,13 @@ MAA::MAAStats::MAAStats(statistics::Group *parent, int num_maas, MAA *_maa)
         STR_NumWordsInserted.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_NumWordsInserted"), statistics::units::Count::get(), "number of words inserted to the request table"));
         STR_NumCacheLineInserted.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_NumCacheLineInserted"), statistics::units::Count::get(), "number of cachelines inserted to the request table"));
         STR_NumRTFull.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_NumRTFull"), statistics::units::Count::get(), "number of request table full events"));
+        STR_ConfigCacheHits.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_ConfigCacheHits"), statistics::units::Count::get(), "config cache hits in getRequestTableConfig"));
+        STR_ConfigCacheMisses.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_ConfigCacheMisses"), statistics::units::Count::get(), "config cache misses in getRequestTableConfig"));
+        STR_NumRTFull_OnCacheHit.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_NumRTFull_OnCacheHit"), statistics::units::Count::get(), "RT full events when config came from cache hit"));
+        STR_NumRTFull_OnCacheMiss.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_NumRTFull_OnCacheMiss"), statistics::units::Count::get(), "RT full events when config came from cache miss"));
+        STR_NumRTFull_Config0.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_NumRTFull_Config0"), statistics::units::Count::get(), "RT full events with config 0 (64 addrs x 32 entries)"));
+        STR_NumRTFull_Config1.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_NumRTFull_Config1"), statistics::units::Count::get(), "RT full events with config 1 (128 addrs x 16 entries)"));
+        STR_NumRTFull_Config2.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_NumRTFull_Config2"), statistics::units::Count::get(), "RT full events with config 2 (256 addrs x 8 entries)"));
         STR_AvgWordsPerCacheLine.push_back(new statistics::Formula(this, MAKE_STREAM_STAT_NAME("STR_AvgWordsPerCacheLine"), statistics::units::Count::get(), "average number of words per cacheline"));
         STR_AvgCacheLinesPerInst.push_back(new statistics::Formula(this, MAKE_STREAM_STAT_NAME("STR_AvgCacheLinesPerInst"), statistics::units::Count::get(), "average number of cachelines per stream instruction"));
         STR_AvgRTFullsPerInst.push_back(new statistics::Formula(this, MAKE_STREAM_STAT_NAME("STR_AvgRTFullsPerInst"), statistics::units::Count::get(), "average number of request table full events per stream instruction"));
