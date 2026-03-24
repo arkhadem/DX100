@@ -488,10 +488,30 @@ void IndirectAccessUnit::fillRowTable(bool &finished, bool &waitForFinish, bool 
         if (my_cond_tile != -1) {
             num_spd_read_condidx_accesses++;
         }
-        if (my_cond_tile == -1 || maa->spd->getData<uint32_t>(my_cond_tile, my_i) != 0) {
-            uint32_t idx = maa->spd->getData<uint32_t>(my_idx_tile, my_i);
-            num_spd_read_condidx_accesses++;
-            Addr vaddr = my_base_addr + my_word_size * idx;
+
+        uint32_t element_cond = maa->spd->getData<uint32_t>(my_cond_tile, my_i);
+
+        if (my_cond_tile == -1 || element_cond != 0) {
+            uint32_t idx;
+            Addr vaddr;
+
+            // load direct addresses for INDIR_LD_REP instead of array indices
+            if (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD_REP) {
+                vaddr = maa->spd->getData<uint64_t>(my_idx_tile, my_i);
+                num_spd_read_condidx_accesses++;
+                // decrement indirection counter
+                uint32_t new_count = element_cond-1;
+                maa->spd->setData<uint32_t>(my_cond_tile, my_i, new_count);
+                // mark if we are going to need to come back and dereference again
+                if (new_count > 0) {
+                    needDrain = true;
+                }
+            } else {
+                idx = maa->spd->getData<uint32_t>(my_idx_tile, my_i);
+                num_spd_read_condidx_accesses++;
+                vaddr = my_base_addr + my_word_size * idx;
+            }
+
             panic_if(vaddr < my_min_addr || vaddr >= my_max_addr, "I[%d] %s: vaddr 0x%lx out of range [0x%lx, 0x%lx)!\n", my_indirect_id, __func__, vaddr, my_min_addr, my_max_addr);
             Addr block_vaddr = addrBlockAligner(vaddr, block_size);
             DPRINTF(MAAIndirect, "I[%d] %s: baseaddr = 0x%lx idx = %u wordsize = %d vaddr = 0x%lx!\n", my_indirect_id, __func__, my_base_addr, idx, my_word_size, vaddr);
@@ -547,6 +567,12 @@ void IndirectAccessUnit::executeInstruction() {
         my_src_reg = my_instruction->src1RegID;
         my_dst_tile = my_instruction->dst1SpdID;
         my_cond_tile = my_instruction->condSpdID;
+
+        // set destination to source
+        if (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD_REP) {
+            my_dst_tile = my_src_tile;
+        }
+
         if (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD ||
             my_instruction->opcode == Instruction::OpcodeType::INDIR_RMW_VECTOR ||
             my_instruction->opcode == Instruction::OpcodeType::INDIR_RMW_SCALAR ||
@@ -829,7 +855,9 @@ void IndirectAccessUnit::createReadPacket(Addr addr, int latency) {
     RequestPtr real_req = std::make_shared<Request>(addr, block_size, flags, maa->requestorId);
     real_req->setRegion(my_addr_range_id);
     PacketPtr read_pkt;
-    if (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD) {
+    if (my_instruction->opcode == Instruction::OpcodeType::INDIR_LD
+        || my_instruction->opcode == Instruction::OpcodeType::INDIR_LD_REP)
+    {
         read_pkt = new Packet(real_req, MemCmd::ReadReq);
     } else {
         read_pkt = new Packet(real_req, MemCmd::ReadExReq);

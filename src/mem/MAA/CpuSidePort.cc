@@ -199,7 +199,8 @@ void MAA::recvTimingReq(PacketPtr pkt, int core_id) {
                 current_instruction->opcode = (data & NA_UINT8) == NA_UINT8 ? Instruction::OpcodeType::MAX : static_cast<Instruction::OpcodeType>(data & NA_UINT8);
                 assert(current_instruction->opcode != Instruction::OpcodeType::MAX);
                 if (current_instruction->opcode == Instruction::OpcodeType::STREAM_LD ||
-                    current_instruction->opcode == Instruction::OpcodeType::INDIR_LD) {
+                    current_instruction->opcode == Instruction::OpcodeType::INDIR_LD ||
+                    current_instruction->opcode == Instruction::OpcodeType::INDIR_LD_REP) {
                     current_instruction->accessType = Instruction::AccessType::READ;
                 } else if (current_instruction->opcode == Instruction::OpcodeType::STREAM_ST ||
                            current_instruction->opcode == Instruction::OpcodeType::INDIR_ST_SCALAR ||
