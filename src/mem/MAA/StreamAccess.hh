@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstring>
+#include <map>
 #include <string>
 
 #include "base/types.hh"
@@ -140,6 +141,9 @@ protected:
     // Metrics from last fill (for request-table config sanity check / future use)
     unsigned int my_inst_num_addresses_used;
     unsigned int my_inst_max_entries_per_address;
+    unsigned int my_instruction_rt_full_count;  // RT full events this instruction
+    std::map<Addr, unsigned> my_inst_addr_to_count;  // cumulative across fill batches for this instruction
+    std::map<Addr, int> my_addr_to_last_optimal;  // consistency check: addr -> last optimal config
     Tick my_SPD_read_finish_tick;
     Tick my_SPD_write_finish_tick;
     Tick my_RT_access_finish_tick;

@@ -600,6 +600,14 @@ public:
         std::vector<statistics::Scalar *> STR_NumRTFull_Config0;
         std::vector<statistics::Scalar *> STR_NumRTFull_Config1;
         std::vector<statistics::Scalar *> STR_NumRTFull_Config2;
+        std::vector<statistics::Scalar *> STR_ConfigOptimal;
+        std::vector<statistics::Scalar *> STR_ConfigSuboptimal;
+        std::vector<statistics::Scalar *> STR_NumRTFull_WhenOptimal;
+        std::vector<statistics::Scalar *> STR_NumRTFull_WhenSuboptimal;
+        std::vector<statistics::Scalar *> STR_OptimalWas0;
+        std::vector<statistics::Scalar *> STR_OptimalWas1;
+        std::vector<statistics::Scalar *> STR_OptimalWas2;
+        std::vector<statistics::Scalar *> STR_AddrOptimalConfigInconsistent;
         std::vector<statistics::Formula *> STR_AvgWordsPerCacheLine;
         std::vector<statistics::Formula *> STR_AvgCacheLinesPerInst;
         std::vector<statistics::Formula *> STR_AvgRTFullsPerInst;

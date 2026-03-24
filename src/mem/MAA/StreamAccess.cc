@@ -16,6 +16,21 @@
 
 namespace gem5 {
 
+namespace {
+
+/** Optimal request-table config from measured usage (must match setRequestTableConfig). */
+int
+computeOptimalRequestTableConfig(unsigned num_addresses_used, unsigned max_entries_per_address)
+{
+    if (num_addresses_used >= 128)
+        return 2;
+    if (max_entries_per_address >= 16)
+        return 0;
+    return 1;
+}
+
+} // namespace
+
 ///////////////
 //
 // STREAM ACCESS UNIT
@@ -61,8 +76,6 @@ void StreamAccessUnit::allocate(int _my_stream_id, unsigned int _num_request_tab
 }
 int StreamAccessUnit::getRequestTableConfig(Addr base_addr, bool *was_hit) {
     Tick cur = curTick();
-    // Select an initial candidate so we always have a valid replacement slot.
-    // Otherwise, if all cache_tick entries are already > 0, oldest would stay -1.
     int oldest = 0;
     Tick oldest_tick = STR_config_cache_tick[0];
     for (int i = 0; i < STR_CONFIG_CACHE_ENTRIES; i++) {
@@ -77,6 +90,7 @@ int StreamAccessUnit::getRequestTableConfig(Addr base_addr, bool *was_hit) {
             oldest = i;
         }
     }
+    // Miss: install placeholder; setRequestTableConfig will write optimal.
     STR_config_addr[oldest] = base_addr;
     STR_config_cache[oldest] = 1;
     STR_config_cache_tick[oldest] = cur;
@@ -85,19 +99,36 @@ int StreamAccessUnit::getRequestTableConfig(Addr base_addr, bool *was_hit) {
     return 1;
 }
 void StreamAccessUnit::setRequestTableConfig(Addr base_addr, unsigned num_addresses_used, unsigned max_entries_per_address) {
-    const unsigned int addrs[NUM_REQUEST_TABLE_CONFIGS] = {64, 128, 256};
-    const unsigned int entries[NUM_REQUEST_TABLE_CONFIGS] = {32, 16, 8};
-    const float headroom = 1.25f;
-    unsigned need_addr = static_cast<unsigned>(num_addresses_used * headroom);
-    unsigned need_ent = static_cast<unsigned>(max_entries_per_address * headroom);
-    int new_config = 1;
-    for (int i = 0; i < NUM_REQUEST_TABLE_CONFIGS; i++) {
-        if (addrs[i] >= need_addr && entries[i] >= need_ent) {
-            new_config = i;
-            break;
-        }
+    const int optimal_config =
+        computeOptimalRequestTableConfig(num_addresses_used, max_entries_per_address);
+    printf("S[%d] %s: optimal_config=%d, num_addresses_used=%u, max_entries_per_address=%u\n", my_stream_id, __func__, optimal_config, num_addresses_used, max_entries_per_address);
+
+    // Track consistency: same address should have same optimal across invocations
+    auto it = my_addr_to_last_optimal.find(base_addr);
+    if (it != my_addr_to_last_optimal.end() && it->second != optimal_config) {
+        (*maa->stats.STR_AddrOptimalConfigInconsistent[my_stream_id])++;
+    }
+    my_addr_to_last_optimal[base_addr] = optimal_config;
+
+    // Optimal-by-config counts
+    if (optimal_config == 0)
+        (*maa->stats.STR_OptimalWas0[my_stream_id])++;
+    else if (optimal_config == 1)
+        (*maa->stats.STR_OptimalWas1[my_stream_id])++;
+    else
+        (*maa->stats.STR_OptimalWas2[my_stream_id])++;
+
+    // Compare chosen config (from cache at decode) vs optimal
+    bool was_optimal = (my_current_config == optimal_config);
+    if (was_optimal) {
+        (*maa->stats.STR_ConfigOptimal[my_stream_id])++;
+        (*maa->stats.STR_NumRTFull_WhenOptimal[my_stream_id]) += my_instruction_rt_full_count;
+    } else {
+        (*maa->stats.STR_ConfigSuboptimal[my_stream_id])++;
+        (*maa->stats.STR_NumRTFull_WhenSuboptimal[my_stream_id]) += my_instruction_rt_full_count;
     }
 
+    const int new_config = optimal_config;
     // replace existing cache entry
     for (int i = 0; i < STR_CONFIG_CACHE_ENTRIES; i++) {
         if (STR_config_addr[i] == base_addr) {
@@ -272,6 +303,8 @@ void StreamAccessUnit::executeInstruction() {
         // Initialization
         my_received_responses = 0;
         my_sent_requests = 0;
+        my_instruction_rt_full_count = 0;
+        my_inst_addr_to_count.clear();
         bool config_hit;
         int config = getRequestTableConfig(my_base_addr, &config_hit);
         my_current_config = config;
@@ -360,6 +393,7 @@ void StreamAccessUnit::executeInstruction() {
                         uint16_t word_id = (vaddr - block_vaddr) / my_word_size;
                         if (request_table->add_entry(page_it->curr_idx, paddr, word_id) == false) {
                             DPRINTF(MAAStream, "S[%d] RequestTable: entry %d not added because request table is full! vaddr=0x%lx, paddr=0x%lx wid = %d\n", my_stream_id, page_it->curr_idx, block_vaddr, paddr, word_id);
+                            my_instruction_rt_full_count++;
                             (*maa->stats.STR_NumRTFull[my_stream_id])++;
                             if (my_config_cache_hit)
                                 (*maa->stats.STR_NumRTFull_OnCacheHit[my_stream_id])++;
@@ -401,17 +435,19 @@ void StreamAccessUnit::executeInstruction() {
             }
         }
 
-        // Record fill metrics (for request-table config sanity check)
-        my_inst_num_addresses_used = addr_to_count.size();
-        my_inst_max_entries_per_address = 0;
+        // Record fill metrics (cumulative across batches for this instruction)
         for (const auto &kv : addr_to_count) {
+            my_inst_addr_to_count[kv.first] += kv.second;
+        }
+        my_inst_num_addresses_used = my_inst_addr_to_count.size();
+        my_inst_max_entries_per_address = 0;
+        for (const auto &kv : my_inst_addr_to_count) {
             if (kv.second > my_inst_max_entries_per_address)
                 my_inst_max_entries_per_address = kv.second;
         }
-        DPRINTF(MAAStream,
-                "S[%d] %s: after fill base=0x%lx num_addresses_used=%u max_entries_per_address=%u (table full=%d)\n",
-                my_stream_id, __func__, my_base_addr, my_inst_num_addresses_used,
-                my_inst_max_entries_per_address, request_table->is_full());
+        // printf("S[%d] %s: after fill base=0x%lx num_addresses_used=%u max_entries_per_address=%u (table full=%d)\n",
+        //        my_stream_id, __func__, my_base_addr, my_inst_num_addresses_used,
+        //        my_inst_max_entries_per_address, request_table->is_full());
 
         delete[] channel_sent;
         // assume parallelism = #Channels

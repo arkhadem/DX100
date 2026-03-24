@@ -49,110 +49,12 @@ Checking for compiler -Wno-self-assign-overloaded support... (cached) yes
 Checking for linker -Wno-free-nonheap-object support... (cached) yes
 scons: done reading SConscript files.
 scons: Building targets ...
- [     CXX] src/base/remote_gdb.cc -> X86/base/remote_gdb.fo
  [VER TAGS]  -> X86/sim/tags.cc
- [     CXX] src/sim/system.cc -> X86/sim/system.fo
- [     CXX] src/sim/faults.cc -> X86/sim/faults.fo
- [     CXX] src/sim/mem_state.cc -> X86/sim/mem_state.fo
- [     CXX] src/sim/pseudo_inst.cc -> X86/sim/pseudo_inst.fo
- [     CXX] src/sim/syscall_emul.cc -> X86/sim/syscall_emul.fo
- [     CXX] src/sim/syscall_desc.cc -> X86/sim/syscall_desc.fo
- [     CXX] src/dev/x86/i82094aa.cc -> X86/dev/x86/i82094aa.fo
- [     CXX] X86/python/_m5/param_CheckerCPU.cc -> .fo
- [     CXX] X86/python/_m5/param_BaseCPU.cc -> .fo
- [     CXX] src/cpu/base.cc -> X86/cpu/base.fo
- [     CXX] src/cpu/exetrace.cc -> X86/cpu/exetrace.fo
- [     CXX] src/cpu/profile.cc -> X86/cpu/profile.fo
- [     CXX] src/cpu/simple_thread.cc -> X86/cpu/simple_thread.fo
- [     CXX] src/cpu/thread_context.cc -> X86/cpu/thread_context.fo
- [     CXX] src/cpu/thread_state.cc -> X86/cpu/thread_state.fo
- [     CXX] X86/python/_m5/param_DummyChecker.cc -> .fo
- [     CXX] src/cpu/checker/cpu.cc -> X86/cpu/checker/cpu.fo
- [     CXX] X86/python/_m5/param_PcCountTracker.cc -> .fo
- [     CXX] X86/python/_m5/param_PcCountTrackerManager.cc -> .fo
- [     CXX] src/cpu/probes/pc_count_tracker.cc -> X86/cpu/probes/pc_count_tracker.fo
- [     CXX] src/cpu/probes/pc_count_tracker_manager.cc -> X86/cpu/probes/pc_count_tracker_manager.fo
- [     CXX] X86/python/_m5/param_BaseO3CPU.cc -> .fo
- [     CXX] src/cpu/o3/commit.cc -> X86/cpu/o3/commit.fo
- [     CXX] src/cpu/o3/cpu.cc -> X86/cpu/o3/cpu.fo
- [     CXX] src/cpu/o3/decode.cc -> X86/cpu/o3/decode.fo
- [     CXX] src/cpu/o3/dyn_inst.cc -> X86/cpu/o3/dyn_inst.fo
- [     CXX] src/cpu/o3/fetch.cc -> X86/cpu/o3/fetch.fo
- [     CXX] src/cpu/o3/iew.cc -> X86/cpu/o3/iew.fo
- [     CXX] src/cpu/o3/inst_queue.cc -> X86/cpu/o3/inst_queue.fo
- [     CXX] src/cpu/o3/lsq.cc -> X86/cpu/o3/lsq.fo
- [     CXX] src/cpu/o3/lsq_unit.cc -> X86/cpu/o3/lsq_unit.fo
- [     CXX] src/cpu/o3/mem_dep_unit.cc -> X86/cpu/o3/mem_dep_unit.fo
- [     CXX] src/cpu/o3/rename.cc -> X86/cpu/o3/rename.fo
- [     CXX] src/cpu/o3/rename_map.cc -> X86/cpu/o3/rename_map.fo
- [     CXX] src/cpu/o3/rob.cc -> X86/cpu/o3/rob.fo
- [     CXX] src/cpu/o3/thread_context.cc -> X86/cpu/o3/thread_context.fo
- [     CXX] src/cpu/o3/thread_state.cc -> X86/cpu/o3/thread_state.fo
- [     CXX] X86/python/_m5/param_BaseO3Checker.cc -> .fo
- [     CXX] src/cpu/o3/checker.cc -> X86/cpu/o3/checker.fo
- [     CXX] src/cpu/o3/probe/simple_trace.cc -> X86/cpu/o3/probe/simple_trace.fo
- [     CXX] src/cpu/o3/probe/elastic_trace.cc -> X86/cpu/o3/probe/elastic_trace.fo
- [     CXX] X86/python/_m5/param_BaseKvmCPU.cc -> .fo
- [     CXX] src/cpu/kvm/base.cc -> X86/cpu/kvm/base.fo
- [     CXX] src/cpu/kvm/vm.cc -> X86/cpu/kvm/vm.fo
- [     CXX] X86/python/_m5/param_BaseMinorCPU.cc -> .fo
- [     CXX] src/cpu/minor/cpu.cc -> X86/cpu/minor/cpu.fo
- [     CXX] src/cpu/minor/decode.cc -> X86/cpu/minor/decode.fo
- [     CXX] src/cpu/minor/dyn_inst.cc -> X86/cpu/minor/dyn_inst.fo
- [     CXX] src/cpu/minor/execute.cc -> X86/cpu/minor/execute.fo
- [     CXX] src/cpu/minor/fetch1.cc -> X86/cpu/minor/fetch1.fo
- [     CXX] src/cpu/minor/fetch2.cc -> X86/cpu/minor/fetch2.fo
- [     CXX] src/cpu/minor/lsq.cc -> X86/cpu/minor/lsq.fo
- [     CXX] src/cpu/minor/pipe_data.cc -> X86/cpu/minor/pipe_data.fo
- [     CXX] src/cpu/minor/pipeline.cc -> X86/cpu/minor/pipeline.fo
- [     CXX] src/cpu/minor/scoreboard.cc -> X86/cpu/minor/scoreboard.fo
- [     CXX] src/cpu/minor/stats.cc -> X86/cpu/minor/stats.fo
- [     CXX] X86/python/_m5/param_BaseAtomicSimpleCPU.cc -> .fo
- [     CXX] src/cpu/simple/atomic.cc -> X86/cpu/simple/atomic.fo
- [     CXX] X86/python/_m5/param_BaseNonCachingSimpleCPU.cc -> .fo
- [     CXX] src/cpu/simple/noncaching.cc -> X86/cpu/simple/noncaching.fo
- [     CXX] X86/python/_m5/param_BaseTimingSimpleCPU.cc -> .fo
- [     CXX] src/cpu/simple/timing.cc -> X86/cpu/simple/timing.fo
- [     CXX] src/cpu/simple/base.cc -> X86/cpu/simple/base.fo
- [     CXX] X86/python/_m5/param_BaseSimpleCPU.cc -> .fo
- [     CXX] X86/python/_m5/param_SimPoint.cc -> .fo
- [     CXX] src/cpu/simple/probes/simpoint.cc -> X86/cpu/simple/probes/simpoint.fo
- [     CXX] src/mem/translating_port_proxy.cc -> X86/mem/translating_port_proxy.fo
- [     CXX] X86/python/_m5/param_MAA.cc -> .fo
- [     CXX] src/mem/MAA/SPD.cc -> X86/mem/MAA/SPD.fo
- [     CXX] src/mem/MAA/IF.cc -> X86/mem/MAA/IF.fo
- [     CXX] src/mem/MAA/Tables.cc -> X86/mem/MAA/Tables.fo
- [     CXX] src/mem/MAA/IndirectAccess.cc -> X86/mem/MAA/IndirectAccess.fo
- [     CXX] src/mem/MAA/StreamAccess.cc -> X86/mem/MAA/StreamAccess.fo
- [     CXX] src/mem/MAA/Invalidator.cc -> X86/mem/MAA/Invalidator.fo
- [     CXX] src/mem/MAA/ALU.cc -> X86/mem/MAA/ALU.fo
- [     CXX] src/mem/MAA/RangeFuser.cc -> X86/mem/MAA/RangeFuser.fo
- [     CXX] src/mem/MAA/CpuSidePort.cc -> X86/mem/MAA/CpuSidePort.fo
- [     CXX] src/mem/MAA/CacheSidePort.cc -> X86/mem/MAA/CacheSidePort.fo
- [     CXX] src/mem/MAA/MemSidePort.cc -> X86/mem/MAA/MemSidePort.fo
- [     CXX] src/mem/MAA/Port.cc -> X86/mem/MAA/Port.fo
- [     CXX] src/mem/MAA/MAA.cc -> X86/mem/MAA/MAA.fo
- [     CXX] src/kern/linux/events.cc -> X86/kern/linux/events.fo
- [     CXX] src/kern/linux/linux.cc -> X86/kern/linux/linux.fo
- [     CXX] src/arch/x86/faults.cc -> X86/arch/x86/faults.fo
- [     CXX] src/arch/x86/insts/badmicroop.cc -> X86/arch/x86/insts/badmicroop.fo
- [     CXX] src/arch/x86/interrupts.cc -> X86/arch/x86/interrupts.fo
- [     CXX] src/arch/x86/isa.cc -> X86/arch/x86/isa.fo
- [     CXX] src/arch/x86/pagetable_walker.cc -> X86/arch/x86/pagetable_walker.fo
- [     CXX] src/arch/x86/remote_gdb.cc -> X86/arch/x86/remote_gdb.fo
- [     CXX] src/arch/x86/utility.cc -> X86/arch/x86/utility.fo
- [     CXX] X86/arch/x86/generated/decoder.cc -> .fo
- [     CXX] X86/arch/x86/generated/inst-constrs.cc -> .fo
- [     CXX] X86/arch/x86/generated/generic_cpu_exec.cc -> .fo
- [     CXX] X86/python/_m5/param_X86KvmCPU.cc -> .fo
- [     CXX] src/arch/x86/kvm/x86_cpu.cc -> X86/arch/x86/kvm/x86_cpu.fo
- [     CXX] src/arch/x86/linux/se_workload.cc -> X86/arch/x86/linux/se_workload.fo
- [     CXX] src/arch/x86/linux/syscalls.cc -> X86/arch/x86/linux/syscalls.fo
- [     CXX] src/arch/x86/linux/syscall_tbl32.cc -> X86/arch/x86/linux/syscall_tbl32.fo
- [     CXX] src/arch/x86/linux/syscall_tbl64.cc -> X86/arch/x86/linux/syscall_tbl64.fo
- [     CXX] src/base/date.cc -> X86/base/date.fo
- [    LINK]  -> X86/gem5.fast
+scons: `build/X86/gem5.opt' is up to date.
 scons: done building targets.
+*** Summary of Warnings ***
+Warning: You can get a 12% performance improvement by installing tcmalloc
+         (libgoogle-perftools-dev scons: done building targets.
 *** Summary of Warnings ***
 Warning: You can get a 12% performance improvement by installing tcmalloc
          (libgoogle-perftools-dev package on Ubuntu or RedHat).

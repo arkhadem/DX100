@@ -777,6 +777,18 @@ void MAA::MAAStats::preDumpStats() {
                    maa->stats.STR_NumRTFull_Config0[0]->value(),
                    maa->stats.STR_NumRTFull_Config1[0]->value(),
                    maa->stats.STR_NumRTFull_Config2[0]->value());
+            printf("system.maa.S0_STR_ConfigOptimal=%g Suboptimal=%g\n",
+                   maa->stats.STR_ConfigOptimal[0]->value(),
+                   maa->stats.STR_ConfigSuboptimal[0]->value());
+            printf("system.maa.S0_STR_NumRTFull_WhenOptimal=%g WhenSuboptimal=%g\n",
+                   maa->stats.STR_NumRTFull_WhenOptimal[0]->value(),
+                   maa->stats.STR_NumRTFull_WhenSuboptimal[0]->value());
+            printf("system.maa.S0_STR_OptimalWas0=%g OptimalWas1=%g OptimalWas2=%g\n",
+                   maa->stats.STR_OptimalWas0[0]->value(),
+                   maa->stats.STR_OptimalWas1[0]->value(),
+                   maa->stats.STR_OptimalWas2[0]->value());
+            printf("system.maa.S0_STR_AddrOptimalConfigInconsistent=%g\n",
+                   maa->stats.STR_AddrOptimalConfigInconsistent[0]->value());
         }
     }
 }
@@ -1028,6 +1040,14 @@ MAA::MAAStats::MAAStats(statistics::Group *parent, int num_maas, MAA *_maa)
         STR_NumRTFull_Config0.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_NumRTFull_Config0"), statistics::units::Count::get(), "RT full events with config 0 (64 addrs x 32 entries)"));
         STR_NumRTFull_Config1.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_NumRTFull_Config1"), statistics::units::Count::get(), "RT full events with config 1 (128 addrs x 16 entries)"));
         STR_NumRTFull_Config2.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_NumRTFull_Config2"), statistics::units::Count::get(), "RT full events with config 2 (256 addrs x 8 entries)"));
+        STR_ConfigOptimal.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_ConfigOptimal"), statistics::units::Count::get(), "instructions where chosen config matched optimal"));
+        STR_ConfigSuboptimal.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_ConfigSuboptimal"), statistics::units::Count::get(), "instructions where chosen config differed from optimal"));
+        STR_NumRTFull_WhenOptimal.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_NumRTFull_WhenOptimal"), statistics::units::Count::get(), "RT full events when config was optimal"));
+        STR_NumRTFull_WhenSuboptimal.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_NumRTFull_WhenSuboptimal"), statistics::units::Count::get(), "RT full events when config was suboptimal"));
+        STR_OptimalWas0.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_OptimalWas0"), statistics::units::Count::get(), "instructions where optimal config was 0"));
+        STR_OptimalWas1.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_OptimalWas1"), statistics::units::Count::get(), "instructions where optimal config was 1"));
+        STR_OptimalWas2.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_OptimalWas2"), statistics::units::Count::get(), "instructions where optimal config was 2"));
+        STR_AddrOptimalConfigInconsistent.push_back(new statistics::Scalar(this, MAKE_STREAM_STAT_NAME("STR_AddrOptimalConfigInconsistent"), statistics::units::Count::get(), "times same addr had different optimal config"));
         STR_AvgWordsPerCacheLine.push_back(new statistics::Formula(this, MAKE_STREAM_STAT_NAME("STR_AvgWordsPerCacheLine"), statistics::units::Count::get(), "average number of words per cacheline"));
         STR_AvgCacheLinesPerInst.push_back(new statistics::Formula(this, MAKE_STREAM_STAT_NAME("STR_AvgCacheLinesPerInst"), statistics::units::Count::get(), "average number of cachelines per stream instruction"));
         STR_AvgRTFullsPerInst.push_back(new statistics::Formula(this, MAKE_STREAM_STAT_NAME("STR_AvgRTFullsPerInst"), statistics::units::Count::get(), "average number of request table full events per stream instruction"));

@@ -96,7 +96,10 @@ bool RequestTable::add_entry(int itr, Addr base_addr, uint16_t wid) {
             break;
         }
     }
-    assert(free_entry_itr != -1);
+    // Per-address entry budget exhausted (same as table full for this line).
+    if (free_entry_itr == -1) {
+        return false;
+    }
     entries[address_itr][free_entry_itr] = RequestTableEntry(itr, wid);
     entries_valid[address_itr][free_entry_itr] = true;
     if (is_stream) {
