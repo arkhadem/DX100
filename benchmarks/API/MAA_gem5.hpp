@@ -35,7 +35,8 @@ enum OpcodeType : uint8_t {
     RANGE_LOOP = 7,
     ALU_SCALAR = 8,
     ALU_VECTOR = 9,
-    ALU_REDUCE = 10
+    ALU_REDUCE = 10,
+    INDIR_LD_REP = 11
 };
 enum class DataType : uint8_t {
     UINT32_TYPE = 0,
@@ -282,6 +283,25 @@ inline void maa_indirect_load(T1 *data, int idx_tile, int dst_tile, int cond_til
                                                             ((uint64_t)NA_UINT8 << 16) |                        // rsrc2
                                                             ((uint64_t)NA_UINT8 << 8) |                         // rsrc3
                                                             (uint64_t)(cond_tile == -1 ? NA_UINT8 : cond_tile); // cond
+    *INSTR_baseaddr = (uint64_t)data;                                                                           // baseaddr
+    __asm__ __volatile__("mfence;");
+}
+template <class T1>
+inline void maa_indirect_load_rep(T1 *data, int idx_tile, int dst_tile, int cond_tile) {
+    DataType data_type = get_data_type<T1>();
+    *INSTR_opcode_datatype_optype_tdst1_tdst2 = ((uint64_t)OpcodeType::INDIR_LD_REP << 32) |                    // opcode
+                                                ((uint64_t)data_type << 24) |                                   // datatype
+                                                ((uint64_t)NA_UINT8 << 16) |                                    // optype
+                                                ((uint64_t)dst_tile << 8) |                                     // tdst1
+                                                (uint64_t)NA_UINT8;                                             // tdst2
+    *INSTR_tsrc1_tsrc2_rdst1_rdst2_rsrc1_rsrc2_rsrc3_csrc = ((uint64_t)idx_tile << 56) |                        // tsrc1
+                                                            ((uint64_t)dst_tile << 48) |                        // tsrc2
+                                                            ((uint64_t)NA_UINT8 << 40) |                        // rdst1
+                                                            ((uint64_t)NA_UINT8 << 32) |                        // rdst2
+                                                            ((uint64_t)NA_UINT8 << 24) |                        // rsrc1
+                                                            ((uint64_t)NA_UINT8 << 16) |                        // rsrc2
+                                                            ((uint64_t)NA_UINT8 << 8) |                         // rsrc3
+                                                            (uint64_t)cond_tile;                                 // cond
     *INSTR_baseaddr = (uint64_t)data;                                                                           // baseaddr
     __asm__ __volatile__("mfence;");
 }
