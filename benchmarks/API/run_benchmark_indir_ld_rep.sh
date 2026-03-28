@@ -1,4 +1,7 @@
-GEM5_HOME="${GEM5_HOME:-../..}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR" || exit 1
+
+GEM5_HOME="${GEM5_HOME:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 N=${1:-64}
 DEPTH=${2:-3}
@@ -7,13 +10,28 @@ OUTDIR="./chkpt_indir_ld_rep_${MODE}_N${N}_D${DEPTH}/"
 
 mkdir -p "${OUTDIR}"
 
-if [ ! -x "${GEM5_HOME}/build/X86/gem5.opt" ]; then
-    echo "Could not find gem5.opt at ${GEM5_HOME}/build/X86/gem5.opt"
-    echo "Set GEM5_HOME to your built gem5 tree root and retry."
+# Require a real ELF executable; gem5.opt may exist but be non-executable or corrupt.
+pick_gem5_bin() {
+    local f="$1"
+    [ -f "$f" ] && [ -x "$f" ] && file -b "$f" 2>/dev/null | grep -q "ELF.*executable"
+}
+
+GEM5_OPT="${GEM5_HOME}/build/X86/gem5.opt"
+GEM5_FAST="${GEM5_HOME}/build/X86/gem5.fast"
+if pick_gem5_bin "${GEM5_OPT}"; then
+    GEM5_BIN="${GEM5_OPT}"
+elif pick_gem5_bin "${GEM5_FAST}"; then
+    echo "Using gem5.fast (gem5.opt missing, not executable, or not a valid ELF binary)."
+    GEM5_BIN="${GEM5_FAST}"
+else
+    echo "No usable gem5 binary. Checked:"
+    echo "  ${GEM5_OPT}"
+    echo "  ${GEM5_FAST}"
+    [ -f "${GEM5_OPT}" ] && [ ! -x "${GEM5_OPT}" ] && echo "Hint: chmod +x ${GEM5_OPT} only helps if the file is a real ELF (rebuild with: scons build/X86/gem5.opt)."
     exit 1
 fi
 
-if [ ! -x ./benchmark_indir_ld_rep.o ]; then
+if [ ! -e ./benchmark_indir_ld_rep.o ]; then
     echo "Could not find ./benchmark_indir_ld_rep.o"
     echo "Build it first with: bash make_benchmark_indir_ld_rep.sh GEM5"
     exit 1

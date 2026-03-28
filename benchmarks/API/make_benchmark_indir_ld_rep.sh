@@ -1,4 +1,8 @@
-GEM5_HOME="${GEM5_HOME:-../..}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR" || exit 1
+
+# DX100 repo root (parent of benchmarks/) when GEM5_HOME not set
+GEM5_HOME="${GEM5_HOME:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 M5OPS_X86="${GEM5_HOME}/util/m5/src/abi/x86/m5op.S"
 COMMON_FLAGS="-std=c++11 -g3 -fopenmp -DTILE_SIZE=16384 -DNUM_CORES=4 -O3"
 
