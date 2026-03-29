@@ -748,8 +748,9 @@ def run(options, root, testsys, cpu_class):
                     testsys.cpu[cpu_id].workload[workload_id].map(start_cacheable_addr, start_cacheable_addr, size_cacheable_addr, True)
                     testsys.cpu[cpu_id].workload[workload_id].map(start_noncacheable_addr, start_noncacheable_addr, size_noncacheable_addr, False)
             testsys.cpu[cpu_id].addMAAInstance(testsys.maa)
-        for cpu_id in range(len(testsys.switch_cpus)):
-            testsys.switch_cpus[cpu_id].addMAAInstance(testsys.maa)
+        if hasattr(testsys, 'switch_cpus'):
+            for cpu_id in range(len(testsys.switch_cpus)):
+                testsys.switch_cpus[cpu_id].addMAAInstance(testsys.maa)
         # for cpu_id in range(len(testsys.switch_cpus_1)):
         #     testsys.switch_cpus_1[cpu_id].addMAAInstance(testsys.maa)
 

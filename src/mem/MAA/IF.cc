@@ -91,6 +91,7 @@ int Instruction::getWordSize(int tile_id) {
         switch (opcode) {
         case OpcodeType::INDIR_ST_VECTOR:
         case OpcodeType::INDIR_RMW_VECTOR:
+        case OpcodeType::INDIR_LD_REP:
         case OpcodeType::ALU_VECTOR: {
             return WordSize();
         }
